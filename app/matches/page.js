@@ -58,7 +58,7 @@ export default async function MatchesPage({ searchParams }) {
       <div className="mt-6 space-y-3">
         <Flash error={sp.error} ok={sp.refreshed && `Found your top ${matches.length} matches.`} />
         {wait > 0 && user.plan !== 'premium' && (
-          <p className="text-sm text-ink/60">Free accounts refresh matches once a day. <Link href="/pricing" className="font-semibold text-clay-600">Premium refreshes every 10 minutes →</Link></p>
+          <p className="text-sm text-ink/60">Free accounts refresh matches once a day. <Link href="/pricing" className="font-semibold text-accent-600">Premium refreshes every 10 minutes →</Link></p>
         )}
       </div>
 
@@ -80,7 +80,7 @@ export default async function MatchesPage({ searchParams }) {
               <JobCard job={j} match={j} />
               <p className="mt-1.5 px-2 text-sm text-ink/65">
                 <span className="mr-1 font-semibold text-ink/40">#{i + 1}</span> {j.reason}
-                {!j.detailed && ai && <> · <Link href={`/jobs/${j.id}#fit`} className="font-medium text-moss-700 hover:underline">Full fit report</Link></>}
+                {!j.detailed && ai && <> · <Link href={`/jobs/${j.id}#fit`} className="font-medium text-brand-700 hover:underline">Full fit report</Link></>}
               </p>
             </li>
           ))}

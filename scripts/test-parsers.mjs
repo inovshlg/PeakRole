@@ -25,3 +25,19 @@ assert.equal(inferSeniority('Head of Product'), 'Director');
 assert.equal(dedupeKey({ company: 'Acme Inc', title: 'Sr. Engineer (Remote)', location: 'London, UK' }), 'acme inc|sr engineer|london');
 assert.ok(!cleanHtml('<p onclick="x">a<script>bad()</script></p>').includes('script'));
 console.log('All parser tests passed ✓');
+
+// Phase 4 connectors
+import { parseSmartRecruitersPosting, parseRecruitee, parseWorkable } from '../lib/sources.mjs';
+const sr = parseSmartRecruitersPosting(
+  { id: 'sr1', name: 'Head of Finance', company: { name: 'Bosch', identifier: 'BoschGroup' }, location: { city: 'Bengaluru', region: 'KA', country: 'in', remote: false }, releasedDate: '2026-11-01T00:00:00Z', typeOfEmployment: { label: 'Full-time' } },
+  { jobAd: { sections: { jobDescription: { title: 'Job Description', text: '<p>Lead finance</p>' }, qualifications: { text: '<ul><li>CA</li></ul>' } } }, applyUrl: 'https://jobs.smartrecruiters.com/BoschGroup/sr1/apply' }
+);
+assert.equal(sr.location, 'Bengaluru, KA, India');
+assert.match(sr.description_html, /Lead finance.*Qualifications.*CA/s);
+const rc = parseRecruitee({ offers: [{ id: 7, title: 'VP Sales', company_name: 'Acme', location: 'Mumbai, India', remote: false, employment_type_code: 'fulltime', description: '<p>x</p>', requirements: '<p>y</p>', careers_apply_url: 'https://acme.recruitee.com/o/vp/c/new', published_at: '2026-11-01', salary: { min: '4000000', max: '5000000', currency: 'INR', period: 'year' } }] }, 'acme');
+assert.equal(rc[0].salary_max, 5000000);
+assert.equal(rc[0].currency, 'INR');
+const wk = parseWorkable({ name: 'Zeta Co', jobs: [{ title: 'Engineering Manager', shortcode: 'AB12', city: 'Pune', country: 'India', telecommuting: true, description: '<p>z</p>', application_url: 'https://apply.workable.com/zeta/j/AB12/apply', published_on: '2026-11-02', employment_type: 'Full-time' }] }, 'zeta');
+assert.equal(wk[0].company, 'Zeta Co');
+assert.equal(wk[0].remote, true);
+console.log('Phase 4 connector tests passed ✓');

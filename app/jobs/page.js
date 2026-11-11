@@ -47,7 +47,7 @@ export default async function JobsPage({ searchParams }) {
               <Link href={`/jobs?${new URLSearchParams({ ...(f.q && { q: f.q }), ...(f.location && { location: f.location }) })}`} className="text-xs text-ink/50 hover:text-ink">Reset</Link>
             </div>
             <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" name="remote" value="1" defaultChecked={f.remote} className="h-4 w-4 accent-moss-700" /> Remote only
+              <input type="checkbox" name="remote" value="1" defaultChecked={f.remote} className="h-4 w-4 accent-brand-700" /> Remote only
             </label>
             <div>
               <label className="label" htmlFor="minSalary">Minimum salary (per year)</label>
@@ -89,7 +89,7 @@ export default async function JobsPage({ searchParams }) {
             </p>
             <div className="flex items-center gap-1 rounded-full border border-ink/10 bg-white p-1 text-sm">
               {[['recent', 'Newest'], ['salary', 'Highest salary']].map(([v, l]) => (
-                <Link key={v} href={qs({ sort: v, page: 1 })} className={`rounded-full px-3 py-1 ${f.sort === v ? 'bg-moss-700 text-white' : 'text-ink/60 hover:text-ink'}`}>{l}</Link>
+                <Link key={v} href={qs({ sort: v, page: 1 })} className={`rounded-full px-3 py-1 ${f.sort === v ? 'bg-brand-700 text-white' : 'text-ink/60 hover:text-ink'}`}>{l}</Link>
               ))}
             </div>
           </div>

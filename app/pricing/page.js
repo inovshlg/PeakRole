@@ -28,19 +28,19 @@ export default async function PricingPage({ searchParams }) {
           <ul className="mt-6 space-y-3 text-sm">{free.map((f) => <li key={f}>✓ {f}</li>)}</ul>
           <Link href={user ? '/jobs' : '/signup'} className="btn-ghost mt-8 w-full">{user ? 'Keep searching' : 'Sign up free'}</Link>
         </div>
-        <div className="card relative border-moss-700 bg-moss-900 p-8 text-sand-50">
-          <span className="absolute -top-3 right-6 rounded-full bg-clay-500 px-3 py-1 text-xs font-bold uppercase tracking-wide">Most popular</span>
+        <div className="card relative border-brand-700 bg-brand-900 p-8 text-canvas-50">
+          <span className="absolute -top-3 right-6 rounded-full bg-accent-500 px-3 py-1 text-xs font-bold uppercase tracking-wide">Most popular</span>
           <h2 className="text-2xl">Premium</h2>
-          <p className="mt-2 font-display text-4xl">{MARKET.premium.price}<span className="text-base text-sand-100/60"> / {MARKET.premium.period}</span></p>
-          <ul className="mt-6 space-y-3 text-sm text-sand-100/90">{premium.map((f) => <li key={f}>✓ {f}</li>)}</ul>
+          <p className="mt-2 font-display text-4xl">{MARKET.premium.price}<span className="text-base text-canvas-100/60"> / {MARKET.premium.period}</span></p>
+          <ul className="mt-6 space-y-3 text-sm text-canvas-100/90">{premium.map((f) => <li key={f}>✓ {f}</li>)}</ul>
           {isPremium ? (
-            <p className="mt-8 rounded-full bg-sand-50/10 py-2.5 text-center text-sm font-semibold">You’re on Premium ✓</p>
+            <p className="mt-8 rounded-full bg-canvas-50/10 py-2.5 text-center text-sm font-semibold">You’re on Premium ✓</p>
           ) : user ? (
             <form action={upgrade}><button className="btn-accent mt-8 w-full">Upgrade to Premium</button></form>
           ) : (
             <Link href="/signup?next=/pricing" className="btn-accent mt-8 w-full">Create account to upgrade</Link>
           )}
-          {demo && !isPremium && <p className="mt-3 text-center text-xs text-sand-100/50">Demo mode: no payment is taken until Stripe keys are configured.</p>}
+          {demo && !isPremium && <p className="mt-3 text-center text-xs text-canvas-100/50">Demo mode: no payment is taken until Stripe keys are configured.</p>}
         </div>
       </div>
     </div>

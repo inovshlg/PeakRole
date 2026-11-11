@@ -1,31 +1,27 @@
 import Link from 'next/link';
 import Logo from './Logo';
 
+const cols = [
+  ['Candidates', [['/jobs', 'Search jobs'], ['/cv', 'CV Studio'], ['/matches', 'AI job matches'], ['/headhunters', 'Headhunters'], ['/salaries', 'Salary insights'], ['/pricing', 'Premium']]],
+  ['Recruiters', [['/employers', 'Post a job'], ['/employers/candidates', 'Search candidates'], ['/employers/credits', 'Credits & pricing'], ['/signup?role=headhunter', 'Join as a headhunter']]],
+];
+
 export default function Footer() {
   return (
-    <footer className="mt-20 border-t border-ink/10 bg-sand-100">
+    <footer className="mt-20 border-t border-canvas-200 bg-white">
       <div className="container-x grid gap-8 py-12 sm:grid-cols-4">
         <div className="sm:col-span-2">
           <Logo />
-          <p className="mt-3 max-w-sm text-sm text-ink/60">Senior and leadership roles from top employers, with salaries shown up front.</p>
+          <p className="mt-3 max-w-sm text-sm text-ink/60">India’s platform for senior and leadership careers: real jobs with salaries, AI-tailored CVs, and direct access to headhunters.</p>
         </div>
-        <div className="text-sm">
-          <p className="mb-3 font-semibold">Candidates</p>
-          <ul className="space-y-2 text-ink/60">
-            <li><Link href="/jobs">Search jobs</Link></li>
-            <li><Link href="/alerts">Job alerts</Link></li>
-            <li><Link href="/pricing">Premium</Link></li>
-          </ul>
-        </div>
-        <div className="text-sm">
-          <p className="mb-3 font-semibold">Employers</p>
-          <ul className="space-y-2 text-ink/60">
-            <li><Link href="/employers">Post a job</Link></li>
-            <li><Link href="/employers/candidates">Search candidates</Link></li>
-          </ul>
-        </div>
+        {cols.map(([title, links]) => (
+          <div key={title} className="text-sm">
+            <p className="mb-3 font-semibold">{title}</p>
+            <ul className="space-y-2 text-ink/60">{links.map(([href, label]) => <li key={href}><Link href={href} className="hover:text-brand-600">{label}</Link></li>)}</ul>
+          </div>
+        ))}
       </div>
-      <div className="container-x flex flex-wrap justify-between gap-2 border-t border-ink/10 py-5 text-xs text-ink/50">
+      <div className="container-x flex flex-wrap justify-between gap-2 border-t border-canvas-100 py-5 text-xs text-ink/50">
         <span>© {new Date().getFullYear()} PeakRole</span>
         <a href="https://www.adzuna.in" target="_blank" rel="noopener" className="hover:text-ink">Jobs by Adzuna</a>
       </div>

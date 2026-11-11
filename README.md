@@ -24,6 +24,21 @@ A job platform with the same features as JobLeads, in its own design:
 
 Stack: Next.js 15 · Tailwind · Postgres (Neon on Vercel; embedded PGlite locally) · Claude API (`@anthropic-ai/sdk`).
 
+
+## Recruiters, headhunters and messaging
+- **Account types:** job seekers, employers (hiring for their own company) and headhunters (search firms). Recruiters get 5 free credits on sign-up.
+- **Headhunter directory** (`/headhunters`): public profiles with specialisms, regions, levels and track record; filter by field, city and level; candidates message headhunters directly (free plan: 3 new headhunters a month).
+- **Messaging** (`/messages`): candidate ↔ recruiter inbox with unread badges and email notifications (Resend). Candidates can close a conversation.
+- **Candidate privacy:** hidden (default), visible to all recruiters, or headhunters only, plus "hide me from these companies" (e.g. a current employer). Recruiters only see anonymous profiles until they unlock one.
+- **Talent search** (`/employers/candidates`): filters, plus AI talent search (describe a role or pick a job and get ranked candidates with reasons). Unlocking a profile costs 1 credit and reveals the name, email, CV and messaging.
+- **Applicant pipeline** (`/employers/jobs/:id`): stages New → Screening → Interview → Offer → Hired / Not selected, AI fit scores, and the tailored CV the candidate applied with. Candidates see stage updates on their dashboard.
+- **Credits** (`/employers/credits`): packs priced in ₹. Credits are added free only in demo mode (`DEMO_UPGRADES=1`) until Razorpay is connected. Featuring a job costs 10 credits for 14 days and puts it at the top of search.
+- **Company pages** (`/companies/:slug`): about section and all open roles.
+- **Salary insights** (`/salaries`): median, 25th and 75th percentiles, and pay by seniority from live listings; "Typical pay" on job pages.
+- **Interview prep** (`/jobs/:id/interview`): AI-predicted questions with answer outlines from your CV.
+- **More job sources:** SmartRecruiters (India postings only), Recruitee and Workable connectors; company logos from each company's website (set `NEXT_PUBLIC_LOGO_DEV_TOKEN` for Logo.dev quality, otherwise the site's icon is used).
+- **Design:** enterprise style inspired by SAP Fiori (dark top bar, blue primary colour, Inter font, card layout), with PeakRole's own branding.
+
 ## Deploy on Vercel (no local install needed)
 
 1. **Import the repo:** go to vercel.com/new, choose this GitHub repository, and click **Deploy**. The first deploy shows a "No database configured" error page; that's expected.

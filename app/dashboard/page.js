@@ -18,7 +18,7 @@ export default async function Dashboard({ searchParams }) {
   const [saved, apps, { n: alertCount }, topMatches, { n: cvCount }] = await Promise.all([
     db.all(`SELECT ${CARD_COLS} FROM saved_jobs s JOIN jobs j ON j.id = s.job_id WHERE s.user_id = $1 ORDER BY s.created_at DESC`, [user.id]),
     db.all(
-      `SELECT a.status, a.created_at AS applied_at, j.id, j.title, j.company, j.location, j.salary_min, j.salary_max, j.currency
+      `SELECT a.status, a.stage, a.created_at AS applied_at, j.posted_by_user_id, j.id, j.title, j.company, j.location, j.salary_min, j.salary_max, j.currency
        FROM applications a JOIN jobs j ON j.id = a.job_id WHERE a.user_id = $1 ORDER BY a.created_at DESC`,
       [user.id]
     ),
@@ -66,8 +66,9 @@ export default async function Dashboard({ searchParams }) {
                 {apps.map((a) => (
                   <div key={a.id} className="flex flex-wrap items-center gap-4 p-4">
                     <div className="min-w-0 flex-1">
-                      <Link href={`/jobs/${a.id}`} className="font-semibold hover:text-moss-700">{a.title}</Link>
+                      <Link href={`/jobs/${a.id}`} className="font-semibold hover:text-brand-700">{a.title}</Link>
                       <p className="text-sm text-ink/60">{a.company} · {a.location} · applied {timeAgo(a.applied_at)}{formatSalary(a.salary_min, a.salary_max, a.currency) && ` · ${formatSalary(a.salary_min, a.salary_max, a.currency)}`}</p>
+                      {a.posted_by_user_id && a.stage !== 'new' && <p className="mt-1 text-xs font-semibold text-brand-600">Employer update: {{ screening: 'Under review', interview: 'Interview stage', offer: 'Offer stage', hired: 'Hired', rejected: 'Not progressing' }[a.stage]}</p>}
                     </div>
                     <form action={updateApplicationStatus} className="flex items-center gap-2">
                       <input type="hidden" name="jobId" value={a.id} />
@@ -93,7 +94,7 @@ export default async function Dashboard({ searchParams }) {
                     <JobCard job={j} />
                     <form action={toggleSave} className="absolute right-4 top-4">
                       <input type="hidden" name="jobId" value={j.id} />
-                      <button className="text-xs text-ink/50 hover:text-clay-600">Remove</button>
+                      <button className="text-xs text-ink/50 hover:text-accent-600">Remove</button>
                     </form>
                   </div>
                 ))}
@@ -104,13 +105,13 @@ export default async function Dashboard({ searchParams }) {
           <section>
             <div className="mb-4 flex items-end justify-between gap-4">
               <h2 className="text-2xl">Your best matches</h2>
-              <Link href="/matches" className="shrink-0 text-sm font-semibold text-moss-700 hover:underline">All matches →</Link>
+              <Link href="/matches" className="shrink-0 text-sm font-semibold text-brand-700 hover:underline">All matches →</Link>
             </div>
             {topMatches.length > 0 ? (
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2">{topMatches.map((j) => <JobCard key={j.id} job={j} match={j} />)}</div>
             ) : (
               <div className="card p-6 text-sm text-ink/60">
-                Upload your CV and we’ll rank open jobs by how well they fit you. <Link href="/matches" className="font-semibold text-moss-700">Find my matches →</Link>
+                Upload your CV and we’ll rank open jobs by how well they fit you. <Link href="/matches" className="font-semibold text-brand-700">Find my matches →</Link>
               </div>
             )}
           </section>
@@ -122,16 +123,16 @@ export default async function Dashboard({ searchParams }) {
               <h3 className="font-sans font-semibold">Profile strength</h3>
               <span className="text-sm text-ink/60">{done}/{checklist.length}</span>
             </div>
-            <div className="mt-3 h-2 rounded-full bg-sand-100"><div className="h-2 rounded-full bg-moss-500" style={{ width: `${(done / checklist.length) * 100}%` }} /></div>
+            <div className="mt-3 h-2 rounded-full bg-canvas-100"><div className="h-2 rounded-full bg-brand-500" style={{ width: `${(done / checklist.length) * 100}%` }} /></div>
             <ul className="mt-4 space-y-2 text-sm">
               {checklist.map(([l, d]) => <li key={l} className={d ? 'text-ink/40 line-through' : ''}>{d ? '✓' : '○'} {l}</li>)}
             </ul>
             <Link href="/profile" className="btn-ghost mt-4 w-full">Edit profile</Link>
           </div>
           {user.plan !== 'premium' && (
-            <div className="card bg-moss-900 p-6 text-sand-50">
+            <div className="card bg-brand-900 p-6 text-canvas-50">
               <h3 className="text-xl">Go Premium</h3>
-              <p className="mt-2 text-sm text-sand-100/75">Unlimited job alerts and AI fit checks, match refreshes every 10 minutes, and top placement in recruiter search.</p>
+              <p className="mt-2 text-sm text-canvas-100/75">Unlimited job alerts and AI fit checks, match refreshes every 10 minutes, and top placement in recruiter search.</p>
               <Link href="/pricing" className="btn-accent mt-4 w-full">See plans</Link>
             </div>
           )}

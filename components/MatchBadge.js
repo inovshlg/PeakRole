@@ -1,8 +1,8 @@
 export function matchTone(score) {
-  if (score >= 85) return 'bg-moss-700 text-white';
-  if (score >= 70) return 'bg-moss-100 text-moss-900';
-  if (score >= 50) return 'bg-sand-200 text-ink';
-  return 'bg-sand-100 text-ink/60';
+  if (score >= 85) return 'bg-brand-700 text-white';
+  if (score >= 70) return 'bg-brand-100 text-brand-900';
+  if (score >= 50) return 'bg-canvas-200 text-ink';
+  return 'bg-canvas-100 text-ink/60';
 }
 
 export default function MatchBadge({ score, ai = true, className = '' }) {

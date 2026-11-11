@@ -26,10 +26,10 @@ export default async function AlertsPage({ searchParams }) {
           <div><label className="label" htmlFor="location">Location</label><input id="location" name="location" defaultValue={sp.location} className="input" placeholder="Any" /></div>
           <div><label className="label" htmlFor="min_salary">Min. salary (₹ per year)</label><input id="min_salary" name="min_salary" inputMode="numeric" className="input" placeholder="e.g. 2500000" /></div>
         </div>
-        <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="remote" className="h-4 w-4 accent-moss-700" /> Remote only</label>
+        <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="remote" className="h-4 w-4 accent-brand-700" /> Remote only</label>
         <div className="flex flex-wrap items-center gap-4">
           <button className="btn-primary" disabled={limitReached}>Create alert</button>
-          {limitReached && <span className="text-sm text-ink/60">Free accounts get 1 alert. <Link href="/pricing" className="font-semibold text-clay-600">Upgrade for unlimited →</Link></span>}
+          {limitReached && <span className="text-sm text-ink/60">Free accounts get 1 alert. <Link href="/pricing" className="font-semibold text-accent-600">Upgrade for unlimited →</Link></span>}
         </div>
       </form>
 
@@ -43,8 +43,8 @@ export default async function AlertsPage({ searchParams }) {
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <Link href={`/jobs?${new URLSearchParams({ q: a.query, location: a.location, ...(a.min_salary && { minSalary: a.min_salary }), ...(a.remote && { remote: '1' }) })}`} className="text-sm font-semibold text-moss-700">View jobs</Link>
-              <form action={deleteAlert}><input type="hidden" name="id" value={a.id} /><button className="text-sm text-ink/50 hover:text-clay-600">Delete</button></form>
+              <Link href={`/jobs?${new URLSearchParams({ q: a.query, location: a.location, ...(a.min_salary && { minSalary: a.min_salary }), ...(a.remote && { remote: '1' }) })}`} className="text-sm font-semibold text-brand-700">View jobs</Link>
+              <form action={deleteAlert}><input type="hidden" name="id" value={a.id} /><button className="text-sm text-ink/50 hover:text-accent-600">Delete</button></form>
             </div>
           </div>
         ))}

@@ -46,7 +46,7 @@ export default async function CvStudio({ searchParams }) {
               <p className="text-sm text-ink/70">
                 {file
                   ? <>We’ll rewrite <b>{file.filename}</b> into a polished, achievement-focused CV.</>
-                  : <>No CV uploaded yet. <Link href="/profile" className="font-semibold text-moss-700">Upload your current CV</Link> for the best result, or describe your experience below.</>}
+                  : <>No CV uploaded yet. <Link href="/profile" className="font-semibold text-brand-700">Upload your current CV</Link> for the best result, or describe your experience below.</>}
               </p>
               <div>
                 <label className="label" htmlFor="notes">Anything to add or emphasise? (optional)</label>
@@ -66,15 +66,15 @@ export default async function CvStudio({ searchParams }) {
           </form>
         </div>
 
-        <aside className="card bg-moss-900 p-6 text-sand-50">
+        <aside className="card bg-brand-900 p-6 text-canvas-50">
           <h3 className="text-xl">How it works</h3>
-          <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-sand-100/80">
+          <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-canvas-100/80">
             <li>Build your main CV once, with AI or by hand.</li>
             <li>On any job, click <b>Tailor my CV</b>. AI reorders and rewrites it for that role (without inventing anything) and writes a cover letter.</li>
             <li>Run a <b>CV check</b> to get a score and concrete fixes.</li>
             <li>Download PDFs in Modern, Classic or Compact style.</li>
           </ol>
-          <p className="mt-4 text-xs text-sand-100/60">
+          <p className="mt-4 text-xs text-canvas-100/60">
             {plan === 'premium' ? 'Premium' : 'Free'}: {CV_LIMITS.tailor[plan]} {CV_LIMITS.tailor.label}, {CV_LIMITS.check[plan]} {CV_LIMITS.check.label}.
             {plan !== 'premium' && <> <Link href="/pricing" className="underline">Get more with Premium</Link></>}
           </p>
@@ -90,9 +90,9 @@ export default async function CvStudio({ searchParams }) {
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
               {rows.map((c) => (
                 <div key={c.id} className="card flex items-center gap-4 p-5">
-                  <div className="flex h-14 w-11 shrink-0 items-center justify-center rounded-md border border-ink/10 bg-sand-50 text-[10px] font-semibold uppercase text-ink/50">{c.template.slice(0, 3)}</div>
+                  <div className="flex h-14 w-11 shrink-0 items-center justify-center rounded-md border border-ink/10 bg-canvas-50 text-[10px] font-semibold uppercase text-ink/50">{c.template.slice(0, 3)}</div>
                   <div className="min-w-0 flex-1">
-                    <Link href={`/cv/${c.id}`} className="block truncate font-semibold hover:text-moss-700">{c.title}</Link>
+                    <Link href={`/cv/${c.id}`} className="block truncate font-semibold hover:text-brand-700">{c.title}</Link>
                     <p className="text-sm text-ink/55">
                       Updated {timeAgo(c.updated_at).toLowerCase()}
                       {c.score && <> · CV score <b className="text-ink">{c.score}</b></>}
@@ -100,8 +100,8 @@ export default async function CvStudio({ searchParams }) {
                     </p>
                   </div>
                   <div className="flex shrink-0 items-center gap-3 text-sm">
-                    <a href={`/api/cvs/${c.id}/pdf?download=1`} className="font-semibold text-moss-700">PDF</a>
-                    <form action={deleteCv}><input type="hidden" name="id" value={c.id} /><button className="text-ink/40 hover:text-clay-600" aria-label={`Delete ${c.title}`}>Delete</button></form>
+                    <a href={`/api/cvs/${c.id}/pdf?download=1`} className="font-semibold text-brand-700">PDF</a>
+                    <form action={deleteCv}><input type="hidden" name="id" value={c.id} /><button className="text-ink/40 hover:text-accent-600" aria-label={`Delete ${c.title}`}>Delete</button></form>
                   </div>
                 </div>
               ))}

@@ -9,6 +9,7 @@ import { upsertJob, getJob } from '@/lib/jobs.mjs';
 import { parseCv, aiEnabled, AiError } from '@/lib/ai.mjs';
 import { refreshMatches, refreshWaitMinutes, checkFit } from '@/lib/matching.mjs';
 import { hashPassword, verifyPassword, createSession, destroySession, requireUser } from '@/lib/auth';
+import { grantCredits, STARTER_CREDITS } from '@/lib/credits.mjs';
 
 const str = (fd, k) => String(fd.get(k) ?? '').trim();
 const num = (fd, k) => {
@@ -30,20 +31,23 @@ export async function signup(formData) {
   const name = str(formData, 'name');
   const email = str(formData, 'email').toLowerCase();
   const password = str(formData, 'password');
-  const role = formData.get('role') === 'employer' ? 'employer' : 'candidate';
+  const chosen = String(formData.get('role') || 'candidate');
+  const role = chosen === 'employer' || chosen === 'headhunter' ? 'employer' : 'candidate';
+  const recruiterType = role === 'employer' ? (chosen === 'headhunter' ? 'headhunter' : 'company') : null;
   const company = str(formData, 'company') || null;
-  const q = `&role=${role}`;
+  const q = `&role=${chosen === 'headhunter' ? 'headhunter' : role}`;
   if (!name || !/^\S+@\S+\.\S+$/.test(email)) fail('/signup', 'Please enter your name and a valid email.', q);
   if (password.length < 8) fail('/signup', 'Password must be at least 8 characters.', q);
-  if (role === 'employer' && !company) fail('/signup', 'Please enter your company name.', q);
+  if (role === 'employer' && !company) fail('/signup', recruiterType === 'headhunter' ? 'Please enter your firm name (or "Independent").' : 'Please enter your company name.', q);
   const db = await getDb();
   if (await db.get('SELECT 1 FROM users WHERE email = $1', [email])) fail('/signup', 'An account with this email already exists.', q);
   const { id } = await db.get(
-    'INSERT INTO users (email, password_hash, name, role, company) VALUES ($1, $2, $3, $4, $5) RETURNING id',
-    [email, hashPassword(password), name, role, company]
+    'INSERT INTO users (email, password_hash, name, role, company, recruiter_type) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
+    [email, hashPassword(password), name, role, company, recruiterType]
   );
+  if (role === 'employer') await grantCredits(db, id, STARTER_CREDITS, 'Welcome credits');
   await createSession(id);
-  redirect(safeNext(str(formData, 'next')) || (role === 'employer' ? '/employers' : '/profile?welcome=1'));
+  redirect(safeNext(str(formData, 'next')) || (role === 'employer' ? '/employers/profile?welcome=1' : '/profile?welcome=1'));
 }
 
 export async function login(formData) {
@@ -112,12 +116,10 @@ export async function updateProfile(formData) {
 
   // 1. Save what the user typed.
   await db.run(
-    `UPDATE users SET name = $1, headline = $2, location = $3, desired_salary = $4, years_experience = $5, skills = $6,
-       visible_to_recruiters = $7 WHERE id = $8`,
+    `UPDATE users SET name = $1, headline = $2, location = $3, desired_salary = $4, years_experience = $5, skills = $6 WHERE id = $7`,
     [
       str(formData, 'name') || user.name, str(formData, 'headline') || null, str(formData, 'location') || null,
-      num(formData, 'desired_salary'), num(formData, 'years_experience'), str(formData, 'skills') || null,
-      formData.get('visible_to_recruiters') ? 1 : 0, user.id,
+      num(formData, 'desired_salary'), num(formData, 'years_experience'), str(formData, 'skills') || null, user.id,
     ]
   );
 
@@ -291,6 +293,7 @@ export async function postJob(formData) {
     posted_at: new Date().toISOString(),
     expires_at: new Date(Date.now() + 60 * 86_400_000).toISOString(),
     posted_by_user_id: user.id,
+    company_domain: user.company_website ? user.company_website.replace(/^https?:\/\//, '').replace(/\/.*$/, '') : null,
   });
   revalidatePath('/', 'layout');
   redirect('/employers?posted=1');

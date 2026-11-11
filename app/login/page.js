@@ -18,8 +18,8 @@ export default async function LoginPage({ searchParams }) {
           <div><label className="label" htmlFor="password">Password</label><input id="password" name="password" type="password" required className="input" autoComplete="current-password" /></div>
           <button className="btn-primary w-full">Log in</button>
         </form>
-        <p className="mt-6 text-center text-sm text-ink/60">New here? <Link href={`/signup${sp.next ? `?next=${encodeURIComponent(sp.next)}` : ''}`} className="font-semibold text-moss-700">Create a free account</Link></p>
-        <p className="mt-4 rounded-xl bg-sand-100 p-3 text-xs text-ink/60">Demo logins: <b>candidate@demo.test</b> or <b>employer@demo.test</b>, password <b>demo1234</b></p>
+        <p className="mt-6 text-center text-sm text-ink/60">New here? <Link href={`/signup${sp.next ? `?next=${encodeURIComponent(sp.next)}` : ''}`} className="font-semibold text-brand-700">Create a free account</Link></p>
+        <p className="mt-4 rounded-xl bg-canvas-100 p-3 text-xs text-ink/60">Demo logins: <b>candidate@demo.test</b> or <b>employer@demo.test</b>, password <b>demo1234</b></p>
       </div>
     </div>
   );

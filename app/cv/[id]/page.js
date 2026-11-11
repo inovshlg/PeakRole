@@ -40,7 +40,7 @@ export default async function CvPage({ params, searchParams }) {
           <h1 className="text-3xl">{row.title}</h1>
           <p className="mt-1 text-sm text-ink/60">
             {row.kind === 'tailored' && row.job_id
-              ? <>Tailored for <Link href={`/jobs/${row.job_id}`} className="font-medium text-moss-700 underline">{row.job_title} at {row.job_company}</Link>{row.job_status !== 'active' && ' (closed)'} · </>
+              ? <>Tailored for <Link href={`/jobs/${row.job_id}`} className="font-medium text-brand-700 underline">{row.job_title} at {row.job_company}</Link>{row.job_status !== 'active' && ' (closed)'} · </>
               : 'Main CV · '}
             saved {timeAgo(row.updated_at).toLowerCase()}
           </p>
@@ -61,13 +61,13 @@ export default async function CvPage({ params, searchParams }) {
       {row.kind === 'tailored' && (notes.changes?.length > 0 || notes.missing?.length > 0) && (
         <section className="mt-5 grid gap-4 md:grid-cols-2">
           {notes.changes?.length > 0 && (
-            <div className="rounded-2xl border border-moss-500/30 bg-moss-50 p-5">
+            <div className="rounded-2xl border border-brand-500/30 bg-brand-50 p-5">
               <h2 className="font-sans text-sm font-semibold">✦ What we changed for this job</h2>
               <ul className="mt-2 list-disc space-y-1 pl-4 text-sm text-ink/80">{notes.changes.map((c) => <li key={c}>{c}</li>)}</ul>
             </div>
           )}
           {notes.missing?.length > 0 && (
-            <div className="rounded-2xl border border-clay-500/30 bg-clay-500/5 p-5">
+            <div className="rounded-2xl border border-accent-500/30 bg-accent-500/5 p-5">
               <h2 className="font-sans text-sm font-semibold">Requirements your CV doesn’t show yet</h2>
               <ul className="mt-2 list-disc space-y-1 pl-4 text-sm text-ink/80">{notes.missing.map((c) => <li key={c}>{c}</li>)}</ul>
               <p className="mt-2 text-xs text-ink/55">If you do have this experience, add it in the editor. We never add things you haven’t told us.</p>
@@ -92,9 +92,9 @@ export default async function CvPage({ params, searchParams }) {
           <div className="card overflow-hidden">
             <div className="flex items-center justify-between border-b border-ink/10 px-4 py-2.5 text-sm">
               <span className="font-semibold">Preview · {TEMPLATES.find((t) => t.id === row.template)?.name}</span>
-              <a href={pdf} target="_blank" rel="noopener" className="text-moss-700">Open full size ↗</a>
+              <a href={pdf} target="_blank" rel="noopener" className="text-brand-700">Open full size ↗</a>
             </div>
-            <iframe src={`${pdf}?v=${version}#view=FitH`} title="CV preview" className="hidden h-[78vh] w-full bg-sand-100 sm:block" />
+            <iframe src={`${pdf}?v=${version}#view=FitH`} title="CV preview" className="hidden h-[78vh] w-full bg-canvas-100 sm:block" />
             <p className="p-4 text-sm text-ink/60 sm:hidden">Tap <b>Open full size</b> to preview your CV.</p>
           </div>
 
@@ -114,7 +114,7 @@ export default async function CvPage({ params, searchParams }) {
                   {check.improvements?.length > 0 && (
                     <div><h3 className="text-xs font-semibold uppercase tracking-wide text-ink/50">Improve</h3>
                       <ol className="mt-1 space-y-2">{check.improvements.map((i, k) => (
-                        <li key={k} className="rounded-lg bg-sand-100 p-3"><b>{i.section}:</b> {i.issue}<br /><span className="text-ink/70">→ {i.suggestion}</span></li>
+                        <li key={k} className="rounded-lg bg-canvas-100 p-3"><b>{i.section}:</b> {i.issue}<br /><span className="text-ink/70">→ {i.suggestion}</span></li>
                       ))}</ol></div>
                   )}
                   {check.ats_issues?.length > 0 && (

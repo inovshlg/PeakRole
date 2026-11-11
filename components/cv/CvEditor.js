@@ -38,12 +38,12 @@ function Section({ title, children, action }) {
 }
 
 function ItemControls({ index, count, onMove, onRemove }) {
-  const btn = 'rounded-md px-2 py-1 text-xs text-ink/50 hover:bg-sand-100 hover:text-ink disabled:opacity-30';
+  const btn = 'rounded-md px-2 py-1 text-xs text-ink/50 hover:bg-canvas-100 hover:text-ink disabled:opacity-30';
   return (
     <div className="flex gap-1">
       <button type="button" className={btn} disabled={index === 0} onClick={() => onMove(index, -1)} aria-label="Move up">↑</button>
       <button type="button" className={btn} disabled={index === count - 1} onClick={() => onMove(index, 1)} aria-label="Move down">↓</button>
-      <button type="button" className={`${btn} hover:!text-clay-600`} onClick={() => onRemove(index)}>Remove</button>
+      <button type="button" className={`${btn} hover:!text-accent-600`} onClick={() => onRemove(index)}>Remove</button>
     </div>
   );
 }
@@ -100,7 +100,7 @@ export default function CvEditor({ id, title: initialTitle, template: initialTem
       <Section title="Design">
         <div className="grid gap-3 sm:grid-cols-3">
           {templates.map((t) => (
-            <label key={t.id} className={`cursor-pointer rounded-xl border p-3 text-sm transition ${template === t.id ? 'border-moss-700 bg-moss-50 ring-1 ring-moss-700' : 'border-ink/15 hover:border-ink/40'}`}>
+            <label key={t.id} className={`cursor-pointer rounded-xl border p-3 text-sm transition ${template === t.id ? 'border-brand-700 bg-brand-50 ring-1 ring-brand-700' : 'border-ink/15 hover:border-ink/40'}`}>
               <input type="radio" name="template_choice" value={t.id} checked={template === t.id} onChange={touch(() => setTemplate(t.id))} className="sr-only" />
               <span className="block font-semibold">{t.name}</span>
               <span className="text-xs text-ink/55">{t.description}</span>
@@ -123,10 +123,10 @@ export default function CvEditor({ id, title: initialTitle, template: initialTem
             <div key={i} className="flex gap-2">
               <input className="input !w-32" placeholder="LinkedIn" value={l.label} onChange={(e) => setItem('links', i, 'label', e.target.value)} maxLength={40} />
               <input className="input" placeholder="linkedin.com/in/you" value={l.url} onChange={(e) => setItem('links', i, 'url', e.target.value)} maxLength={300} />
-              <button type="button" className="px-2 text-sm text-ink/40 hover:text-clay-600" onClick={() => removeItem('links')(i)} aria-label="Remove link">✕</button>
+              <button type="button" className="px-2 text-sm text-ink/40 hover:text-accent-600" onClick={() => removeItem('links')(i)} aria-label="Remove link">✕</button>
             </div>
           ))}
-          {d.links.length < 6 && <button type="button" className="text-sm font-semibold text-moss-700" onClick={() => addItem('links', { label: '', url: '' })}>+ Add link</button>}
+          {d.links.length < 6 && <button type="button" className="text-sm font-semibold text-brand-700" onClick={() => addItem('links', { label: '', url: '' })}>+ Add link</button>}
         </div>
       </Section>
 
@@ -134,7 +134,7 @@ export default function CvEditor({ id, title: initialTitle, template: initialTem
         <Area label="3–4 lines about your experience and what you’re looking for" value={d.summary} onChange={(v) => set('summary', v)} rows={4} maxLength={1500} />
       </Section>
 
-      <Section title="Experience" action={<button type="button" className="text-sm font-semibold text-moss-700" onClick={() => addItem('experience', { title: '', company: '', location: '', start: '', end: '', bulletsText: '' })}>+ Add role</button>}>
+      <Section title="Experience" action={<button type="button" className="text-sm font-semibold text-brand-700" onClick={() => addItem('experience', { title: '', company: '', location: '', start: '', end: '', bulletsText: '' })}>+ Add role</button>}>
         {d.experience.map((e, i) => (
           <div key={i} className="rounded-xl border border-ink/10 p-4">
             <div className="mb-3 flex items-center justify-between">
@@ -158,7 +158,7 @@ export default function CvEditor({ id, title: initialTitle, template: initialTem
         ))}
       </Section>
 
-      <Section title="Education" action={<button type="button" className="text-sm font-semibold text-moss-700" onClick={() => addItem('education', { degree: '', institution: '', location: '', start: '', end: '', details: '' })}>+ Add education</button>}>
+      <Section title="Education" action={<button type="button" className="text-sm font-semibold text-brand-700" onClick={() => addItem('education', { degree: '', institution: '', location: '', start: '', end: '', details: '' })}>+ Add education</button>}>
         {d.education.map((e, i) => (
           <div key={i} className="rounded-xl border border-ink/10 p-4">
             <div className="mb-3 flex items-center justify-between">

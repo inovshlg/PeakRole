@@ -10,7 +10,7 @@ export default function SetupNeeded({ status }) {
   };
   return (
     <div className="container-x max-w-2xl py-16">
-      <p className="text-sm font-semibold uppercase tracking-widest text-clay-600">Setup needed</p>
+      <p className="text-sm font-semibold uppercase tracking-widest text-accent-600">Setup needed</p>
       <h1 className="mt-2 text-4xl">{missing ? 'Connect a database to finish setup' : 'The site can’t reach its database'}</h1>
       {missing ? (
         <ol className="mt-6 list-decimal space-y-3 pl-5 text-ink/80">
@@ -24,7 +24,7 @@ export default function SetupNeeded({ status }) {
         </ol>
       ) : (
         <div className="mt-6 space-y-3 text-ink/80">
-          <p>Error code: <code className="rounded bg-sand-100 px-1.5 py-0.5">{status.code}</code></p>
+          <p>Error code: <code className="rounded bg-canvas-100 px-1.5 py-0.5">{status.code}</code></p>
           <p>{hints[status.code] || 'Check DATABASE_URL in Settings → Environment Variables, then redeploy. The full error is in the Vercel project’s Logs tab.'}</p>
         </div>
       )}

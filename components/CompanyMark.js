@@ -1,12 +1,35 @@
+'use client';
+
+import { useState } from 'react';
 import { initials } from '@/lib/format.mjs';
 
-const PALETTE = ['bg-moss-100 text-moss-700', 'bg-sand-200 text-ink', 'bg-clay-500/15 text-clay-600', 'bg-moss-200 text-moss-900'];
+const PALETTE = ['bg-brand-50 text-brand-700', 'bg-canvas-100 text-ink/70', 'bg-accent-500/10 text-accent-600', 'bg-positive/10 text-positive'];
+const LOGO_TOKEN = process.env.NEXT_PUBLIC_LOGO_DEV_TOKEN;
 
-export default function CompanyMark({ name, size = 'md' }) {
+/** Company logo from its domain (Logo.dev if NEXT_PUBLIC_LOGO_DEV_TOKEN is set, else the site icon), falling back to initials. */
+export function logoUrl(domain) {
+  if (!domain) return null;
+  const d = String(domain).replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+  return LOGO_TOKEN
+    ? `https://img.logo.dev/${encodeURIComponent(d)}?token=${LOGO_TOKEN}&size=128&format=png`
+    : `https://www.google.com/s2/favicons?domain=${encodeURIComponent(d)}&sz=128`;
+}
+
+export default function CompanyMark({ name = '', domain, size = 'md' }) {
+  const [failed, setFailed] = useState(false);
+  const dim = size === 'lg' ? 'h-14 w-14 text-lg' : size === 'sm' ? 'h-9 w-9 text-xs' : 'h-11 w-11 text-sm';
+  const src = !failed && logoUrl(domain);
+  if (src) {
+    return (
+      <div className={`flex shrink-0 items-center justify-center overflow-hidden rounded-lg border border-canvas-200 bg-white p-1.5 ${dim}`}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={src} alt={`${name} logo`} className="h-full w-full object-contain" loading="lazy" onError={() => setFailed(true)} />
+      </div>
+    );
+  }
   const h = [...name].reduce((a, c) => a + c.charCodeAt(0), 0);
-  const dim = size === 'lg' ? 'h-14 w-14 text-lg' : 'h-11 w-11 text-sm';
   return (
-    <div className={`flex shrink-0 items-center justify-center rounded-xl font-display font-semibold ${dim} ${PALETTE[h % PALETTE.length]}`}>
+    <div className={`flex shrink-0 items-center justify-center rounded-lg font-semibold ${dim} ${PALETTE[h % PALETTE.length]}`} aria-hidden>
       {initials(name)}
     </div>
   );
