@@ -117,7 +117,7 @@ export default async function Home() {
 
       <section className="container-x mt-12 grid gap-4 md:grid-cols-3">
         {[
-          ['/cv', 'Tailor your CV', 'Build an SAP-focused CV and adapt it to each job, with a matching cover letter.'],
+          ['/salaries', 'Check your salary', 'What SAP EWM and TM consultants earn, by role and country.'],
           ['/alerts', 'Get job alerts', 'Weekly digest of new EWM/TM roles, plus instant alerts for your searches.'],
           ['/companies', 'Companies hiring', 'SAP partners, consultancies and end users hiring EWM/TM talent right now.'],
         ].map(([href, t, d]) => (

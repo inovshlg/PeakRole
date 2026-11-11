@@ -17,11 +17,11 @@ export default async function Header() {
 
   const nav = employer
     ? [['/employers', 'Dashboard'], ['/employers/candidates', 'Search candidates'], ['/headhunters', 'Headhunters'], ['/jobs', 'Jobs']]
-    : [['/sap-ewm-jobs', 'SAP EWM jobs'], ['/sap-tm-jobs', 'SAP TM jobs'], ['/jobs', 'All jobs'], ['/companies', 'Companies'], ['/cv', 'CV Builder']];
+    : [['/sap-ewm-jobs', 'SAP EWM jobs'], ['/sap-tm-jobs', 'SAP TM jobs'], ['/jobs', 'All jobs'], ['/companies', 'Companies'], ['/salaries', 'Salaries']];
   if (isAdmin(user)) nav.push(['/admin', 'Admin']);
   const menu = employer
     ? [['/employers', 'Dashboard'], ['/employers/profile', user.recruiter_type === 'headhunter' ? 'My headhunter profile' : 'Company profile'], ['/employers/credits', `Credits (${user.credits})`]]
-    : [['/dashboard', 'My applications'], ['/matches', 'Recommended jobs'], ['/profile', 'Profile & privacy'], ['/cv', 'My CVs'], ['/alerts', 'Job alerts']];
+    : [['/dashboard', 'My applications'], ['/matches', 'Recommended jobs'], ['/profile', 'Profile & resume'], ['/alerts', 'Job alerts']];
 
   return (
     <header className="sticky top-0 z-30 border-b border-canvas-200 bg-white">

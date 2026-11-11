@@ -250,7 +250,7 @@ export async function prepareInterviewAction(formData) {
       [user.id, jobId]
     );
     const cvText = cvRow ? cvToText(normalizeCv(cvRow.data)) : JSON.stringify({ headline: user.headline, skills: user.skills, cv: user.cv_parsed });
-    if (!cvRow && !user.cv_parsed && !user.headline) throw new AiError('Create your CV in CV Studio (or upload one) first, so the answers can use your real experience.');
+    if (!cvRow && !user.cv_parsed && !user.headline) throw new AiError('Upload your resume on your profile first, so the answers can use your real experience.');
     await checkAiQuota(db, user, 'interview');
     const data = await prepareInterview(cvText, job);
     await recordAiUse(db, user, 'interview');

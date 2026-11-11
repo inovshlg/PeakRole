@@ -12,7 +12,7 @@ export default async function sitemap() {
     db.all("SELECT id, posted_at FROM jobs WHERE status = 'active' AND source <> 'adzuna' ORDER BY posted_at DESC LIMIT 5000"),
     db.all("SELECT DISTINCT country, CASE WHEN category ILIKE '%EWM%' THEN 'ewm' END AS ewm, CASE WHEN category ILIKE '%TM%' THEN 'tm' END AS tm FROM jobs WHERE status = 'active' AND country IS NOT NULL"),
   ]);
-  const pages = ['', '/jobs', '/sap-ewm-jobs', '/sap-tm-jobs', '/companies', '/employers', '/signup', '/cv', '/privacy'].map((p) => ({ url: `${site}${p}`, changeFrequency: 'daily', priority: p === '' ? 1 : 0.8 }));
+  const pages = ['', '/jobs', '/sap-ewm-jobs', '/sap-tm-jobs', '/companies', '/employers', '/signup', '/salaries', '/privacy'].map((p) => ({ url: `${site}${p}`, changeFrequency: 'daily', priority: p === '' ? 1 : 0.8 }));
   const seo = [];
   for (const m of ['ewm', 'tm']) {
     for (const c of COUNTRIES) {

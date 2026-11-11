@@ -95,7 +95,7 @@ export async function applyToJob(formData) {
     [user.id, jobId]
   );
   if (!job.apply_url && !user.cv_name && !cv) {
-    redirect(`/cv?error=${encodeURIComponent('Create or upload your CV first; it is sent with on-site applications.')}`);
+    redirect(`/profile?error=${encodeURIComponent('Upload your resume first; it is sent with your application.')}`);
   }
   await db.run(
     'INSERT INTO applications (user_id, job_id, cv_id) VALUES ($1, $2, $3) ON CONFLICT (user_id, job_id) DO UPDATE SET cv_id = COALESCE(excluded.cv_id, applications.cv_id)',

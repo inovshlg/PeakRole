@@ -3,7 +3,7 @@ import Logo from './Logo';
 
 const cols = [
   ['Jobs', [['/sap-ewm-jobs', 'SAP EWM jobs'], ['/sap-tm-jobs', 'SAP TM jobs'], ['/sap-ewm-jobs/india', 'SAP EWM jobs in India'], ['/sap-ewm-jobs/germany', 'SAP EWM jobs in Germany'], ['/jobs?type=Contract', 'Contract & freelance'], ['/jobs?remote=1', 'Remote SAP jobs']]],
-  ['More', [['/cv', 'CV Builder'], ['/companies', 'Companies hiring'], ['/employers', 'Hire consultants'], ['/privacy', 'Privacy notice'], ['/signup', 'Create your profile']]],
+  ['More', [['/salaries', 'SAP EWM/TM salaries'], ['/companies', 'Companies hiring'], ['/employers', 'Hire consultants'], ['/privacy', 'Privacy notice'], ['/signup', 'Create your profile']]],
 ];
 
 export default function Footer() {

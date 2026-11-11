@@ -34,7 +34,7 @@ export default async function Dashboard({ searchParams }) {
 
   const checklist = [
     ['Add a headline', !!user.headline], ['Set your desired salary', !!user.desired_salary],
-    ['Upload your CV', !!user.cv_name], ['Build your CV in CV Studio', cvCount > 0], ['Get AI job matches', !!user.matches_refreshed_at], ['Create a job alert', alertCount > 0], ['Become visible to recruiters', !!user.visible_to_recruiters],
+    ['Upload your resume', !!user.cv_name], ['Get AI job matches', !!user.matches_refreshed_at], ['Create a job alert', alertCount > 0], ['Become visible to recruiters', !!user.visible_to_recruiters],
   ];
   const done = checklist.filter(([, d]) => d).length;
 

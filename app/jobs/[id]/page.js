@@ -6,7 +6,6 @@ import { getCurrentUser } from '@/lib/auth';
 import { formatSalary, timeAgo, slugify } from '@/lib/format.mjs';
 import { typicalPayFor } from '@/lib/salaries.mjs';
 import { toggleSave, applyToJob, checkMyFit } from '@/app/actions';
-import { tailorCvForJob } from '@/app/cv/actions';
 import { aiEnabled } from '@/lib/ai.mjs';
 import SubmitButton from '@/components/SubmitButton';
 import MatchBadge from '@/components/MatchBadge';
@@ -115,7 +114,7 @@ export default async function JobPage({ params, searchParams }) {
               <form action={applyToJob}>
                 <input type="hidden" name="jobId" value={job.id} />
                 <button className="btn-primary w-full">
-                  {applied ? `Applied ✓${applied.stage && applied.stage !== 'new' ? ` · ${applied.stage}` : ''}` : job.source === 'adzuna' ? 'View full job & apply ↗' : job.apply_url ? 'Apply on company site ↗' : tailored ? 'Apply with my tailored CV' : 'Apply with my CV'}
+                  {applied ? `Applied ✓${applied.stage && applied.stage !== 'new' ? ` · ${applied.stage}` : ''}` : job.source === 'adzuna' ? 'View full job & apply ↗' : job.apply_url ? 'Apply on company site ↗' : 'Apply with my resume'}
                 </button>
               </form>
             )}
@@ -129,16 +128,9 @@ export default async function JobPage({ params, searchParams }) {
             <div className="card p-5">
               <p className="eyebrow mb-3">AI application tools</p>
               {!ai ? (
-                <p className="text-sm text-ink/60">AI tools (tailored CV, fit check, interview prep) are being switched on for this site. Check back soon.</p>
+                <p className="text-sm text-ink/60">AI tools (fit check, interview prep) are being switched on for this site. Check back soon.</p>
               ) : (
                 <div className="space-y-4">
-                  <AiTool title="Tailored CV & cover letter" text="Your CV rewritten for this role, using only your real experience.">
-                    {tailored ? <Link href={`/cv/${tailored.id}`} className="btn-ghost w-full">Open your tailored CV →</Link>
-                      : user ? (
-                        <form action={tailorCvForJob}><input type="hidden" name="jobId" value={job.id} />
-                          <SubmitButton className="btn-primary w-full" pendingText="Tailoring your CV… (up to a minute)">Generate CV for this job</SubmitButton></form>
-                      ) : loginFor('generate your CV')}
-                  </AiTool>
                   <AiTool title="How well do you fit?" text={match && !match.detailed ? match.reason : 'Strengths, gaps and what to emphasise.'}>
                     {match?.detailed ? <a href="#fit" className="btn-quiet w-full">See your fit report ↑</a>
                       : user ? (
