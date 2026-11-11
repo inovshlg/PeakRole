@@ -19,6 +19,7 @@ export default async function JobsPage({ searchParams }) {
     seniority: sp.seniority || '', category: sp.category || '', type: sp.type || '', sort: sp.sort || 'recent', page: sp.page || 1,
     module: ['EWM', 'TM'].includes(sp.module) ? sp.module : '', country: COUNTRIES.some((c) => c.code === sp.country) ? sp.country : '',
     posted: ['1', '3', '7', '14', '30'].includes(sp.posted) ? sp.posted : '',
+    maxExp: ['0', '2', '5', '8'].includes(sp.maxExp) ? sp.maxExp : '',
   };
   const db = await getDb();
   const user = await getCurrentUser();
@@ -83,6 +84,12 @@ export default async function JobsPage({ searchParams }) {
               <label className="label" htmlFor="type">Contract type</label>
               <select id="type" name="type" defaultValue={f.type} className="input">
                 <option value="">Any</option><option value="Full-time">Permanent</option><option value="Contract">Contract / freelance</option>
+              </select>
+            </div>
+            <div>
+              <label className="label" htmlFor="maxExp">Experience required</label>
+              <select id="maxExp" name="maxExp" defaultValue={f.maxExp} className="input">
+                <option value="">Any</option><option value="0">Freshers / no minimum</option><option value="2">Up to 2 years</option><option value="5">Up to 5 years</option><option value="8">Up to 8 years</option>
               </select>
             </div>
             <div>

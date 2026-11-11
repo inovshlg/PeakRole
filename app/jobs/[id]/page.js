@@ -81,6 +81,7 @@ export default async function JobPage({ params, searchParams }) {
             <Link href={`/companies/${slugify(job.company)}`} className="font-medium text-brand-600 hover:underline">{job.company}</Link> · {job.location} · {timeAgo(job.posted_at)}
           </p>
           <div className="mt-2 flex flex-wrap gap-1.5">
+            {job.min_experience === 0 ? <span className="chip bg-positive/10 text-positive">Freshers welcome</span> : Number.isInteger(job.min_experience) ? <span className="chip">Min. {job.min_experience} yrs experience</span> : null}
             {job.seniority && <span className="chip">{job.seniority}</span>}
             <span className="chip">{job.employment_type}</span>
             {job.remote ? <span className="chip">Remote</span> : null}

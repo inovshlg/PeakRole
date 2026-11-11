@@ -31,9 +31,9 @@ export default function JobCard({ job, saved, match }) {
         <CompanyMark name={job.company} domain={job.company_domain} />
       </div>
       <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-ink/70">
-        {job.seniority && <Meta d="M4 8h16v11H4zM9 8V5h6v3">{EXPERIENCE[job.seniority] || job.seniority}</Meta>}
+        {(Number.isInteger(job.min_experience) || job.seniority) && <Meta d="M4 8h16v11H4zM9 8V5h6v3">{job.min_experience === 0 ? 'Freshers welcome' : Number.isInteger(job.min_experience) ? `Min ${job.min_experience} yr${job.min_experience === 1 ? '' : 's'}` : EXPERIENCE[job.seniority] || job.seniority}</Meta>}
         <Meta d="M7 5h10M7 9h10M7 5c5 0 5 8 0 8l7 7">{salary || 'Not disclosed'}</Meta>
-        <Meta d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11ZM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z">{job.remote && !/remote/i.test(job.location) ? `${job.location || 'India'} · Remote` : job.location || 'India'}</Meta>
+        <Meta d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11ZM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z">{job.remote && !/remote/i.test(job.location) ? `${job.location || 'Location not stated'} · Remote` : job.location || 'Location not stated'}</Meta>
       </div>
       {job.snippet && <p className="mt-3 line-clamp-2 text-sm text-ink/55">{job.snippet}</p>}
       <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-canvas-100 pt-3">
