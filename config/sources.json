@@ -1,0 +1,7 @@
+{
+  "_comment": "Company board tokens. Greenhouse: boards.greenhouse.io/<token>; Lever: jobs.lever.co/<token>; Ashby: jobs.ashbyhq.com/<token>",
+  "greenhouse": ["stripe", "airbnb", "databricks", "cloudflare", "figma"],
+  "lever": ["palantir", "spotify"],
+  "ashby": ["ramp", "notion"],
+  "adzuna": { "country": "gb", "queries": ["director", "head of", "senior manager"], "pages": 2 }
+}
