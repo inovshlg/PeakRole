@@ -2,11 +2,12 @@ import Link from 'next/link';
 import { getCurrentUser } from '@/lib/auth';
 import { upgrade } from '@/app/actions';
 import Flash from '@/components/Flash';
+import { MARKET } from '@/lib/market.mjs';
 
 export const metadata = { title: 'Premium' };
 
-const free = ['Search and save unlimited jobs', 'AI reads your CV and ranks your best-fit jobs', 'Match refresh once a day', '5 AI fit checks per day', '1 daily job alert', 'Recruiter-visible profile'];
-const premium = ['Everything in Free', 'Unlimited AI fit checks with strengths, gaps & tips', 'Match refreshes every 10 minutes', 'Unlimited job alerts', 'Top placement in recruiter search', 'Priority support'];
+const free = ['Search and save unlimited jobs', 'AI CV builder + PDF downloads', '3 AI-tailored CVs & cover letters a month', '3 CV checks a day', 'AI job matches, refreshed daily', '1 daily job alert'];
+const premium = ['Everything in Free', '60 tailored CVs & cover letters a month', '30 CV checks a day', 'Unlimited AI fit checks', 'Match refreshes every 10 minutes', 'Unlimited job alerts', 'Top placement in recruiter search'];
 
 export default async function PricingPage({ searchParams }) {
   const sp = await searchParams;
@@ -23,14 +24,14 @@ export default async function PricingPage({ searchParams }) {
       <div className="mx-auto mt-10 grid max-w-4xl gap-6 md:grid-cols-2">
         <div className="card p-8">
           <h2 className="text-2xl">Free</h2>
-          <p className="mt-2 font-display text-4xl">0<span className="text-base text-ink/50"> / forever</span></p>
+          <p className="mt-2 font-display text-4xl">₹0<span className="text-base text-ink/50"> / forever</span></p>
           <ul className="mt-6 space-y-3 text-sm">{free.map((f) => <li key={f}>✓ {f}</li>)}</ul>
           <Link href={user ? '/jobs' : '/signup'} className="btn-ghost mt-8 w-full">{user ? 'Keep searching' : 'Sign up free'}</Link>
         </div>
         <div className="card relative border-moss-700 bg-moss-900 p-8 text-sand-50">
           <span className="absolute -top-3 right-6 rounded-full bg-clay-500 px-3 py-1 text-xs font-bold uppercase tracking-wide">Most popular</span>
           <h2 className="text-2xl">Premium</h2>
-          <p className="mt-2 font-display text-4xl">$29<span className="text-base text-sand-100/60"> / month</span></p>
+          <p className="mt-2 font-display text-4xl">{MARKET.premium.price}<span className="text-base text-sand-100/60"> / {MARKET.premium.period}</span></p>
           <ul className="mt-6 space-y-3 text-sm text-sand-100/90">{premium.map((f) => <li key={f}>✓ {f}</li>)}</ul>
           {isPremium ? (
             <p className="mt-8 rounded-full bg-sand-50/10 py-2.5 text-center text-sm font-semibold">You’re on Premium ✓</p>

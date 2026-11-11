@@ -15,7 +15,7 @@ export default async function Dashboard({ searchParams }) {
   const sp = await searchParams;
   const user = await requireUser('/dashboard', 'candidate');
   const db = await getDb();
-  const [saved, apps, { n: alertCount }, topMatches] = await Promise.all([
+  const [saved, apps, { n: alertCount }, topMatches, { n: cvCount }] = await Promise.all([
     db.all(`SELECT ${CARD_COLS} FROM saved_jobs s JOIN jobs j ON j.id = s.job_id WHERE s.user_id = $1 ORDER BY s.created_at DESC`, [user.id]),
     db.all(
       `SELECT a.status, a.created_at AS applied_at, j.id, j.title, j.company, j.location, j.salary_min, j.salary_max, j.currency
@@ -29,11 +29,12 @@ export default async function Dashboard({ searchParams }) {
        ORDER BY m.score DESC LIMIT 4`,
       [user.id]
     ),
+    db.get('SELECT COUNT(*)::int AS n FROM cvs WHERE user_id = $1', [user.id]),
   ]);
 
   const checklist = [
     ['Add a headline', !!user.headline], ['Set your desired salary', !!user.desired_salary],
-    ['Upload your CV', !!user.cv_name], ['Get AI job matches', !!user.matches_refreshed_at], ['Create a job alert', alertCount > 0], ['Become visible to recruiters', !!user.visible_to_recruiters],
+    ['Upload your CV', !!user.cv_name], ['Build your CV in CV Studio', cvCount > 0], ['Get AI job matches', !!user.matches_refreshed_at], ['Create a job alert', alertCount > 0], ['Become visible to recruiters', !!user.visible_to_recruiters],
   ];
   const done = checklist.filter(([, d]) => d).length;
 

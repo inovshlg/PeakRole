@@ -3,6 +3,7 @@ import { getDb } from '@/lib/db.mjs';
 import { searchJobs, facetCounts } from '@/lib/jobs.mjs';
 import JobCard from '@/components/JobCard';
 import SearchBar from '@/components/SearchBar';
+import { MARKET } from '@/lib/market.mjs';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,7 +18,7 @@ export default async function Home() {
         <div aria-hidden className="pointer-events-none absolute -bottom-32 left-10 h-72 w-72 rounded-full bg-clay-500/20 blur-3xl" />
         <div className="container-x relative py-16 sm:py-24">
           <p className="mb-4 inline-block rounded-full border border-sand-50/20 px-3 py-1 text-xs font-medium uppercase tracking-widest text-sand-100/80">
-            For senior & leadership talent
+            For senior & leadership talent in India
           </p>
           <h1 className="max-w-3xl text-4xl leading-tight sm:text-6xl">
             Your next senior role, <em className="text-clay-500 not-italic">with the salary shown</em>.
@@ -29,11 +30,12 @@ export default async function Home() {
             <SearchBar dark />
           </div>
           <div className="mt-5 flex flex-wrap gap-2 text-sm">
-            {['Director', 'Head of', 'VP', 'Engineering Manager', 'Remote'].map((t) => (
-              <Link key={t} href={t === 'Remote' ? '/jobs?remote=1' : `/jobs?q=${encodeURIComponent(t)}`} className="rounded-full bg-sand-50/10 px-3 py-1 text-sand-100/90 hover:bg-sand-50/20">
-                {t}
+            {MARKET.cities.map((c) => (
+              <Link key={c} href={`/jobs?location=${encodeURIComponent(c)}`} className="rounded-full bg-sand-50/10 px-3 py-1 text-sand-100/90 hover:bg-sand-50/20">
+                {c}
               </Link>
             ))}
+            <Link href="/jobs?remote=1" className="rounded-full bg-sand-50/10 px-3 py-1 text-sand-100/90 hover:bg-sand-50/20">Remote</Link>
           </div>
         </div>
       </section>

@@ -80,10 +80,19 @@ export async function applyToJob(formData) {
   const db = await getDb();
   const job = await getJob(db, jobId);
   if (!job) redirect('/jobs');
-  if (!job.apply_url && !user.cv_name) {
-    redirect(`/profile?error=${encodeURIComponent('Upload your CV first; it is sent with on-site applications.')}`);
+  // Send the CV tailored for this job if there is one, otherwise the latest main CV / uploaded file.
+  const cv = await db.get(
+    `SELECT id FROM cvs WHERE user_id = $1 AND (job_id = $2 OR kind = 'master')
+     ORDER BY (job_id = $2) DESC NULLS LAST, updated_at DESC LIMIT 1`,
+    [user.id, jobId]
+  );
+  if (!job.apply_url && !user.cv_name && !cv) {
+    redirect(`/cv?error=${encodeURIComponent('Create or upload your CV first; it is sent with on-site applications.')}`);
   }
-  await db.run('INSERT INTO applications (user_id, job_id) VALUES ($1, $2) ON CONFLICT DO NOTHING', [user.id, jobId]);
+  await db.run(
+    'INSERT INTO applications (user_id, job_id, cv_id) VALUES ($1, $2, $3) ON CONFLICT (user_id, job_id) DO UPDATE SET cv_id = COALESCE(excluded.cv_id, applications.cv_id)',
+    [user.id, jobId, cv?.id ?? null]
+  );
   revalidatePath('/', 'layout');
   redirect(job.apply_url || `/jobs/${jobId}?applied=1`);
 }
@@ -276,7 +285,7 @@ export async function postJob(formData) {
     seniority: str(formData, 'seniority') || undefined,
     salary_min: num(formData, 'salary_min'),
     salary_max: num(formData, 'salary_max'),
-    currency: str(formData, 'currency') || 'USD',
+    currency: str(formData, 'currency') || 'INR',
     description_html: html,
     apply_url: /^https?:\/\//.test(applyUrl) ? applyUrl : null,
     posted_at: new Date().toISOString(),

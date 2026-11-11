@@ -52,7 +52,7 @@ export default async function EmployersPage({ searchParams }) {
           <Flash error={sp.error} ok={sp.posted && 'Your job is live. It appears in search and alerts straight away.'} />
           <div><label className="label" htmlFor="title">Job title</label><input id="title" name="title" required className="input" placeholder="e.g. Director of Engineering" /></div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <div><label className="label" htmlFor="location">Location</label><input id="location" name="location" className="input" placeholder="City, country" /></div>
+            <div><label className="label" htmlFor="location">Location</label><input id="location" name="location" className="input" placeholder="e.g. Bengaluru" /></div>
             <label className="flex items-end gap-2 pb-3 text-sm"><input type="checkbox" name="remote" className="h-4 w-4 accent-moss-700" /> Remote OK</label>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -60,9 +60,9 @@ export default async function EmployersPage({ searchParams }) {
             <div><label className="label" htmlFor="employment_type">Type</label><select id="employment_type" name="employment_type" className="input">{EMPLOYMENT_TYPES.map((s) => <option key={s}>{s}</option>)}</select></div>
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
-            <div><label className="label" htmlFor="salary_min">Salary from</label><input id="salary_min" name="salary_min" inputMode="numeric" className="input" placeholder="120000" /></div>
-            <div><label className="label" htmlFor="salary_max">Salary to</label><input id="salary_max" name="salary_max" inputMode="numeric" className="input" placeholder="150000" /></div>
-            <div><label className="label" htmlFor="currency">Currency</label><select id="currency" name="currency" className="input">{['USD', 'EUR', 'GBP', 'INR', 'CAD', 'AUD'].map((c) => <option key={c}>{c}</option>)}</select></div>
+            <div><label className="label" htmlFor="salary_min">Salary from</label><input id="salary_min" name="salary_min" inputMode="numeric" className="input" placeholder="2500000" /></div>
+            <div><label className="label" htmlFor="salary_max">Salary to</label><input id="salary_max" name="salary_max" inputMode="numeric" className="input" placeholder="3500000" /></div>
+            <div><label className="label" htmlFor="currency">Currency</label><select id="currency" name="currency" className="input">{['INR', 'USD', 'EUR', 'GBP', 'SGD', 'AED'].map((c) => <option key={c}>{c}</option>)}</select></div>
           </div>
           <div>
             <label className="label" htmlFor="description">Description</label>

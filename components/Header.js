@@ -8,7 +8,7 @@ export default async function Header() {
   const links =
     user?.role === 'employer'
       ? [['/employers', 'Post & manage jobs'], ['/employers/candidates', 'Find candidates'], ['/jobs', 'Browse jobs']]
-      : [['/jobs', 'Find jobs'], ['/pricing', 'Premium'], ...(user ? [['/matches', 'My matches'], ['/dashboard', 'Dashboard'], ['/alerts', 'Alerts']] : [['/employers', 'For employers']])];
+      : [['/jobs', 'Find jobs'], ['/pricing', 'Premium'], ...(user ? [['/matches', 'My matches'], ['/cv', 'CV Studio'], ['/dashboard', 'Dashboard']] : [['/employers', 'For employers']])];
 
   return (
     <header className="sticky top-0 z-30 border-b border-ink/10 bg-sand-50/90 backdrop-blur">

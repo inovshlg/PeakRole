@@ -1,4 +1,4 @@
-# PeakRole: senior jobs, salaries up front, AI matching
+# PeakRole: senior jobs in India, salaries up front, AI CVs and matching
 
 A job platform with the same features as JobLeads, in its own design:
 
@@ -6,6 +6,18 @@ A job platform with the same features as JobLeads, in its own design:
 - **AI CV reading:** upload a PDF or .docx and Claude extracts your headline, level, years of experience, skills, industries, work history and the roles you're a strong fit for. It fills in empty profile fields and never overwrites what you typed.
 - **AI job matching:** a fast keyword pre-filter shortlists 25 jobs, then Claude scores each 0–100 with a one-line reason. Results appear as ✦ match badges across the site and on **My matches**.
 - **AI fit check:** on any job page, get a detailed report with your strengths, gaps and what to emphasise in your application.
+- **CV Studio:**
+  - **AI CV builder:** builds a polished CV from your uploaded CV and notes.
+  - **Editor:** edit every section yourself.
+  - **PDF downloads:** three templates (Modern, Classic, Compact) with ₹ and Indian names rendered correctly.
+  - **Tailor my CV:** on any job, rewrites your CV for that role using only real experience, lists honest gaps, and writes a cover letter (downloadable as a PDF).
+  - **CV check:** a score, strengths, concrete fixes and ATS issues, optionally against a specific job.
+  - **Applying:** on-site applications send the CV you tailored for that job.
+- **India market:**
+  - **Salaries:** shown in ₹ lakh / crore, with salary filters in lakh.
+  - **City search:** understands Indian city names ("Delhi NCR" also finds Gurugram and Noida; "Bengaluru" also finds "Bangalore").
+  - **Job sources:** Adzuna India, plus global companies' boards filtered to Indian locations.
+  - **Settings:** all of this is in `lib/market.mjs`.
 - **Employers:** post and close jobs, see applicants, and search candidates who opted in (including text from their AI-parsed CV).
 - **Job pipeline:** imports from Greenhouse, Lever, Ashby and Adzuna, removes duplicates and expires closed roles, on a daily Vercel Cron.
 - **SEO:** Google for Jobs `JobPosting` structured data on every job page.
@@ -40,6 +52,15 @@ Not included on purpose: scraping LinkedIn, Indeed, JobLeads or other job boards
 
 ## AI details and costs
 
+- **Usage limits per AI action** (`CV_LIMITS` in `lib/cv.mjs`):
+
+  | Action | Free | Premium |
+  |---|---|---|
+  | AI CV builds | 3 / day | 20 / day |
+  | Tailored CVs + cover letters | 3 / 30 days | 60 / 30 days |
+  | CV checks | 3 / day | 30 / day |
+
+  A use is only counted when the AI call succeeds.
 - Model: `claude-opus-5-5` (override with `ANTHROPIC_MODEL`). Calls use structured JSON output, and server-side fallbacks are enabled for refusals.
 - **Uses per action:** one call when a CV is uploaded (low effort), one per match refresh (25 jobs, medium effort), and one per fit check.
 - **Usage limits:** free accounts refresh matches once a day and get 5 fit checks a day. Premium refreshes every 10 minutes and gets unlimited fit checks. These limits are in `lib/matching.mjs` and `app/actions.js`.
@@ -64,6 +85,10 @@ npm run test:parsers              # source parser tests
 ```
 app/                pages, server actions (app/actions.js), cron + CV API routes
 lib/ai.mjs          Claude: CV parsing, job ranking, fit analysis
+lib/cv.mjs          CV Studio: CV schema/validation, AI build/tailor/check, usage limits
+components/cv/      CV editor (client) + PDF templates (server, @react-pdf/renderer)
+lib/market.mjs      India settings: currency, salary steps, cities, location aliases
+assets/fonts/       Inter (OFL) + DejaVu fonts for PDFs (licences included)
 lib/matching.mjs    shortlist → AI ranking, caching, rate limits
 lib/db.mjs          schema + Postgres/PGlite adapter
 lib/jobs.mjs        search, upsert/dedupe, expiry

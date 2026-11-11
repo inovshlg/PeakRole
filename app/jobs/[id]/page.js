@@ -9,11 +9,12 @@ import { aiEnabled } from '@/lib/ai.mjs';
 import SubmitButton from '@/components/SubmitButton';
 import MatchBadge from '@/components/MatchBadge';
 import Flash from '@/components/Flash';
+import { tailorCvForJob } from '@/app/cv/actions';
 import CompanyMark from '@/components/CompanyMark';
 import JobCard from '@/components/JobCard';
 
 // AI calls run in this page's server actions; allow them time to finish.
-export const maxDuration = 120;
+export const maxDuration = 300;
 
 export async function generateMetadata({ params }) {
   const job = await getJob(await getDb(), (await params).id);
@@ -27,11 +28,12 @@ export default async function JobPage({ params, searchParams }) {
   const job = await getJob(db, id);
   if (!job) notFound();
   const user = await getCurrentUser();
-  const [saved, applied, match, similar] = await Promise.all([
+  const [saved, applied, match, similar, tailored] = await Promise.all([
     user && db.get('SELECT 1 AS x FROM saved_jobs WHERE user_id = $1 AND job_id = $2', [user.id, job.id]),
     user && db.get('SELECT 1 AS x FROM applications WHERE user_id = $1 AND job_id = $2', [user.id, job.id]),
     user && db.get('SELECT * FROM job_matches WHERE user_id = $1 AND job_id = $2', [user.id, job.id]),
     similarJobs(db, job),
+    user && db.get("SELECT id FROM cvs WHERE user_id = $1 AND job_id = $2 AND kind = 'tailored' ORDER BY updated_at DESC LIMIT 1", [user.id, job.id]),
   ]);
   const salary = formatSalary(job.salary_min, job.salary_max, job.currency);
   const expired = job.status !== 'active';
@@ -96,6 +98,22 @@ export default async function JobPage({ params, searchParams }) {
             </form>
             {!user && <p className="text-center text-xs text-ink/50">You’ll be asked to sign in, which takes about 30 seconds.</p>}
           </div>
+          {!expired && aiEnabled() && user?.role !== 'employer' && (
+            <div className="card p-6">
+              <h3 className="font-sans font-semibold">Apply with a CV made for this job</h3>
+              <p className="mt-2 text-sm text-ink/60">AI rewrites your CV around this role’s requirements, using only your real experience, and writes a cover letter.</p>
+              {tailored ? (
+                <Link href={`/cv/${tailored.id}`} className="btn-ghost mt-4 w-full">Open your tailored CV →</Link>
+              ) : user ? (
+                <form action={tailorCvForJob} className="mt-4">
+                  <input type="hidden" name="jobId" value={job.id} />
+                  <SubmitButton className="btn-accent w-full" pendingText="Tailoring your CV… (up to a minute)">✦ Tailor my CV for this job</SubmitButton>
+                </form>
+              ) : (
+                <Link href={`/login?next=/jobs/${job.id}`} className="btn-accent mt-4 w-full">Log in to tailor your CV</Link>
+              )}
+            </div>
+          )}
           {!expired && aiEnabled() && user?.role !== 'employer' && (
             <div className="card p-6">
               <div className="flex items-center justify-between gap-3">

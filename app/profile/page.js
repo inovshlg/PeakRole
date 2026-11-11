@@ -71,11 +71,11 @@ export default async function ProfilePage({ searchParams }) {
         </div>
         <div className="grid gap-5 sm:grid-cols-2">
           <div><label className="label" htmlFor="name">Full name</label><input id="name" name="name" defaultValue={u.name} className="input" /></div>
-          <div><label className="label" htmlFor="location">Location</label><input id="location" name="location" defaultValue={u.location ?? ''} placeholder="e.g. London, UK" className="input" /></div>
+          <div><label className="label" htmlFor="location">Location</label><input id="location" name="location" defaultValue={u.location ?? ''} placeholder="e.g. Bengaluru, India" className="input" /></div>
         </div>
         <div><label className="label" htmlFor="headline">Headline</label><input id="headline" name="headline" defaultValue={u.headline ?? ''} placeholder="e.g. Head of Finance · SaaS · 12 years" className="input" /></div>
         <div className="grid gap-5 sm:grid-cols-2">
-          <div><label className="label" htmlFor="desired_salary">Desired yearly salary</label><input id="desired_salary" name="desired_salary" inputMode="numeric" defaultValue={u.desired_salary ?? ''} placeholder="120000" className="input" /></div>
+          <div><label className="label" htmlFor="desired_salary">Desired yearly salary (₹ CTC)</label><input id="desired_salary" name="desired_salary" inputMode="numeric" defaultValue={u.desired_salary ?? ''} placeholder="e.g. 3500000 for ₹35 L" className="input" /></div>
           <div><label className="label" htmlFor="years_experience">Years of experience</label><input id="years_experience" name="years_experience" inputMode="numeric" defaultValue={u.years_experience ?? ''} className="input" /></div>
         </div>
         <div><label className="label" htmlFor="skills">Key skills</label><textarea id="skills" name="skills" rows={3} defaultValue={u.skills ?? ''} placeholder="Comma separated" className="input" /></div>

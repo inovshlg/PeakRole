@@ -3,6 +3,8 @@ import { getDb } from '@/lib/db.mjs';
 import { requireUser } from '@/lib/auth';
 import { createAlert, deleteAlert } from '@/app/actions';
 import Flash from '@/components/Flash';
+import { formatSalary } from '@/lib/format.mjs';
+import { MARKET } from '@/lib/market.mjs';
 
 export const metadata = { title: 'Job alerts' };
 
@@ -22,7 +24,7 @@ export default async function AlertsPage({ searchParams }) {
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="sm:col-span-1"><label className="label" htmlFor="query">Job title or keyword</label><input id="query" name="query" defaultValue={sp.query} className="input" placeholder="e.g. Head of Product" /></div>
           <div><label className="label" htmlFor="location">Location</label><input id="location" name="location" defaultValue={sp.location} className="input" placeholder="Any" /></div>
-          <div><label className="label" htmlFor="min_salary">Min. salary (USD equiv.)</label><input id="min_salary" name="min_salary" inputMode="numeric" className="input" placeholder="Any" /></div>
+          <div><label className="label" htmlFor="min_salary">Min. salary (₹ per year)</label><input id="min_salary" name="min_salary" inputMode="numeric" className="input" placeholder="e.g. 2500000" /></div>
         </div>
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="remote" className="h-4 w-4 accent-moss-700" /> Remote only</label>
         <div className="flex flex-wrap items-center gap-4">
@@ -37,7 +39,7 @@ export default async function AlertsPage({ searchParams }) {
             <div>
               <p className="font-semibold">{a.query || 'Any role'}{a.location && ` in ${a.location}`}</p>
               <p className="text-sm text-ink/60">
-                {[a.min_salary && `${(a.min_salary / 1000).toLocaleString()}k+`, a.remote && 'Remote only', 'Daily email'].filter(Boolean).join(' · ')}
+                {[a.min_salary && formatSalary(a.min_salary, null, MARKET.currency), a.remote && 'Remote only', 'Daily email'].filter(Boolean).join(' · ')}
               </p>
             </div>
             <div className="flex items-center gap-3">

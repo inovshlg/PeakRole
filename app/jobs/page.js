@@ -2,13 +2,14 @@ import Link from 'next/link';
 import { getDb } from '@/lib/db.mjs';
 import { searchJobs, facetCounts, SENIORITIES, EMPLOYMENT_TYPES } from '@/lib/jobs.mjs';
 import { getCurrentUser } from '@/lib/auth';
+import { MARKET } from '@/lib/market.mjs';
+import { formatSalary } from '@/lib/format.mjs';
 import JobCard from '@/components/JobCard';
 import { matchMap } from '@/lib/matching.mjs';
 import SearchBar from '@/components/SearchBar';
 
 export const metadata = { title: 'Search jobs' };
 
-const SALARY_STEPS = [50000, 80000, 100000, 150000, 200000];
 
 export default async function JobsPage({ searchParams }) {
   const sp = await searchParams;
@@ -49,10 +50,10 @@ export default async function JobsPage({ searchParams }) {
               <input type="checkbox" name="remote" value="1" defaultChecked={f.remote} className="h-4 w-4 accent-moss-700" /> Remote only
             </label>
             <div>
-              <label className="label" htmlFor="minSalary">Minimum salary (USD equiv.)</label>
+              <label className="label" htmlFor="minSalary">Minimum salary (per year)</label>
               <select id="minSalary" name="minSalary" defaultValue={f.minSalary} className="input">
                 <option value="">Any</option>
-                {SALARY_STEPS.map((s) => <option key={s} value={s}>${(s / 1000).toLocaleString()}k+</option>)}
+                {MARKET.salarySteps.map((s) => <option key={s} value={s}>{formatSalary(s, null, MARKET.currency)}</option>)}
               </select>
             </div>
             <div>
