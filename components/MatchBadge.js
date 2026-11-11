@@ -8,7 +8,7 @@ export function matchTone(score) {
 export default function MatchBadge({ score, ai = true, className = '' }) {
   return (
     <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${matchTone(score)} ${className}`} title={ai ? 'AI match score' : 'Keyword match score'}>
-      {ai ? '✦ ' : ''}{score}% match
+      {ai ? '' : ''}{score}% match
     </span>
   );
 }

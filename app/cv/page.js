@@ -54,7 +54,7 @@ export default async function CvStudio({ searchParams }) {
                   placeholder={'e.g. Promoted to Director in 2023. Led the ₹120 Cr cost-reduction programme. Looking for VP Operations roles in Bengaluru.'} />
               </div>
               <div className="flex flex-wrap items-center gap-3">
-                <SubmitButton pendingText="Writing your CV… (about 30–60 seconds)">✦ Build my CV with AI</SubmitButton>
+                <SubmitButton pendingText="Writing your CV… (about 30–60 seconds)">Build my CV with AI</SubmitButton>
                 <span className="text-xs text-ink/50">{CV_LIMITS.generate[plan]} {CV_LIMITS.generate.label}</span>
               </div>
             </form>

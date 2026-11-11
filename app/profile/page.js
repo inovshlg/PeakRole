@@ -26,7 +26,7 @@ export default async function ProfilePage({ searchParams }) {
 
       {sp.parsed && (
         <div className="alert-ok mt-6 flex flex-wrap items-center justify-between gap-3">
-          <span>✦ We read your CV and filled in the empty fields below. Check them, then see your matches.</span>
+          <span>We read your CV and filled in the empty fields below. Check them, then see your matches.</span>
           <Link href="/matches" className="btn-primary !py-1.5">See my matches →</Link>
         </div>
       )}
@@ -34,7 +34,7 @@ export default async function ProfilePage({ searchParams }) {
       {cv && (
         <section className="card mt-6 p-6">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="font-sans text-base font-semibold">✦ What the AI found in your CV</h2>
+            <h2 className="font-sans text-base font-semibold">What the AI found in your CV</h2>
             <span className="text-xs text-ink/50">{u.cv_name}</span>
           </div>
           <p className="mt-2 text-sm text-ink/75">{cv.summary}</p>

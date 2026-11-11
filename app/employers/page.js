@@ -14,10 +14,10 @@ export const metadata = { title: 'Employers' };
 function Landing({ user }) {
   return (
     <>
-      <section className="bg-shell text-white">
+      <section className="bg-brand-900 text-white">
         <div className="container-x py-16">
           <p className="text-sm text-white/60">For employers & headhunters</p>
-          <h1 className="mt-2 max-w-3xl text-4xl font-semibold leading-tight text-white sm:text-5xl">Hire senior talent in India, faster.</h1>
+          <h1 className="mt-2 max-w-3xl text-3xl font-bold leading-tight text-white sm:text-[44px]">Hire senior talent in India, faster.</h1>
           <p className="mt-4 max-w-xl text-lg text-white/70">Post roles for free, search AI-ranked candidates, and manage applicants in one pipeline.</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/signup?role=employer" className="btn-primary">I’m hiring for my company</Link>

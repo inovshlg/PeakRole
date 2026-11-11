@@ -37,7 +37,7 @@ Stack: Next.js 15 · Tailwind · Postgres (Neon on Vercel; embedded PGlite local
 - **Salary insights** (`/salaries`): median, 25th and 75th percentiles, and pay by seniority from live listings; "Typical pay" on job pages.
 - **Interview prep** (`/jobs/:id/interview`): AI-predicted questions with answer outlines from your CV.
 - **More job sources:** SmartRecruiters (India postings only), Recruitee and Workable connectors; company logos from each company's website (set `NEXT_PUBLIC_LOGO_DEV_TOKEN` for Logo.dev quality, otherwise the site's icon is used).
-- **Design:** enterprise style inspired by SAP Fiori (dark top bar, blue primary colour, Inter font, card layout), with PeakRole's own branding.
+- **Design:** Indian job-portal style: white header, search-first home page, dense job cards (experience · ₹ salary · location), top companies hiring, jobs by city and department. Poppins for headings, Noto Sans for text (supports ₹ and Hindi).
 
 ## Deploy on Vercel (no local install needed)
 

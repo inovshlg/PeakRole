@@ -54,7 +54,7 @@ export default async function CvPage({ params, searchParams }) {
       <div className="mt-5 space-y-3">
         <Flash
           error={sp.error}
-          ok={(sp.saved && 'Saved. The preview has been updated.') || (sp.created && '✦ Your CV is ready. Review every line, then download it.') || (sp.tailored && '✦ Tailored CV and cover letter ready. Check them before you apply.') || (sp.checked && 'CV check complete. See the results on the right.')}
+          ok={(sp.saved && 'Saved. The preview has been updated.') || (sp.created && 'Your CV is ready. Review every line, then download it.') || (sp.tailored && 'Tailored CV and cover letter ready. Check them before you apply.') || (sp.checked && 'CV check complete. See the results on the right.')}
         />
       </div>
 
@@ -62,7 +62,7 @@ export default async function CvPage({ params, searchParams }) {
         <section className="mt-5 grid gap-4 md:grid-cols-2">
           {notes.changes?.length > 0 && (
             <div className="rounded-2xl border border-brand-500/30 bg-brand-50 p-5">
-              <h2 className="font-sans text-sm font-semibold">✦ What we changed for this job</h2>
+              <h2 className="font-sans text-sm font-semibold">What we changed for this job</h2>
               <ul className="mt-2 list-disc space-y-1 pl-4 text-sm text-ink/80">{notes.changes.map((c) => <li key={c}>{c}</li>)}</ul>
             </div>
           )}
@@ -101,7 +101,7 @@ export default async function CvPage({ params, searchParams }) {
           {aiEnabled() && (
             <div id="check" className="card scroll-mt-24 p-5">
               <div className="flex items-center justify-between gap-3">
-                <h2 className="font-sans text-base font-semibold">✦ CV check{row.job_id ? ' for this job' : ''}</h2>
+                <h2 className="font-sans text-base font-semibold">CV check{row.job_id ? ' for this job' : ''}</h2>
                 {check && <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${matchTone(check.score)}`}>{check.score}/100</span>}
               </div>
               {check ? (

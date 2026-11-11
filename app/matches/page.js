@@ -43,7 +43,7 @@ export default async function MatchesPage({ searchParams }) {
         {ready && (
           <form action={refreshMyMatches} className="text-right">
             <SubmitButton disabled={wait > 0} pendingText={ai ? 'AI is ranking jobs… (up to a minute)' : 'Finding matches…'}>
-              ✦ {user.matches_refreshed_at ? 'Refresh matches' : 'Find my matches'}
+              {user.matches_refreshed_at ? 'Refresh matches' : 'Find my matches'}
             </SubmitButton>
             {user.matches_refreshed_at && (
               <p className="mt-1.5 text-xs text-ink/50">

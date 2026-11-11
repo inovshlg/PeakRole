@@ -262,7 +262,8 @@ export async function postJob(formData) {
   const user = await requireUser('/employers', 'employer');
   const title = str(formData, 'title');
   const location = str(formData, 'location');
-  const description = str(formData, 'description');
+  // Browsers submit textarea line breaks as \r\n; normalise so paragraphs and bullets are detected.
+  const description = str(formData, 'description').replace(/\r\n?/g, '\n');
   if (!title || !description || (!location && !formData.get('remote'))) {
     fail('/employers', 'Title, location and description are required.');
   }

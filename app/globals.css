@@ -4,9 +4,9 @@
 
 @layer base {
   html { -webkit-text-size-adjust: 100%; }
-  body { @apply bg-canvas-50 font-sans text-[15px] text-ink antialiased; font-feature-settings: 'cv11', 'ss01'; }
-  h1, h2, h3 { @apply font-display font-semibold tracking-tight text-ink; }
-  :focus-visible { outline: 2px solid #0070f2; outline-offset: 2px; }
+  body { @apply bg-canvas-50 font-sans text-[15px] text-ink antialiased; }
+  h1, h2, h3 { @apply font-display font-semibold text-ink; }
+  :focus-visible { outline: 2px solid #1f4fd1; outline-offset: 2px; }
 }
 
 @layer components {
@@ -14,12 +14,12 @@
 
   .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50; }
   .btn-primary { @apply btn bg-brand-500 text-white hover:bg-brand-600 active:bg-brand-700; }
-  .btn-accent { @apply btn bg-brand-500 text-white hover:bg-brand-600 active:bg-brand-700; }
+  .btn-accent { @apply btn bg-accent-500 text-white hover:bg-accent-600; }
   .btn-ghost { @apply btn border border-brand-500/40 bg-white text-brand-600 hover:bg-brand-50; }
   .btn-quiet { @apply btn text-brand-600 hover:bg-brand-50; }
   .btn-danger { @apply btn border border-negative/40 bg-white text-negative hover:bg-negative/5; }
 
-  .card { @apply rounded-xl bg-white shadow-card; }
+  .card { @apply rounded-xl border border-canvas-200 bg-white shadow-card; }
   .card-hover { @apply transition-shadow hover:shadow-raised; }
   .input { @apply w-full rounded-lg border border-canvas-200 bg-white px-3.5 py-2.5 text-sm text-ink placeholder:text-ink/40 hover:border-brand-200 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20; }
   .label { @apply mb-1.5 block text-[13px] font-medium text-ink/70; }
@@ -29,7 +29,7 @@
   .alert-ok { @apply rounded-lg border-l-4 border-positive bg-positive/5 px-4 py-3 text-sm text-ink; }
   .page-title { @apply text-2xl font-semibold sm:text-3xl; }
   .section-title { @apply text-lg font-semibold; }
-  .eyebrow { @apply text-xs font-semibold uppercase tracking-wider text-ink/50; }
+  .eyebrow { @apply text-sm font-medium text-ink/55; }
 
   .prose-job { @apply text-[15px] leading-7 text-ink/85; }
   .prose-job p { @apply my-3; }

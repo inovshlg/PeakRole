@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { initials } from '@/lib/format.mjs';
 
 const PALETTE = ['bg-brand-50 text-brand-700', 'bg-canvas-100 text-ink/70', 'bg-accent-500/10 text-accent-600', 'bg-positive/10 text-positive'];
@@ -17,13 +17,18 @@ export function logoUrl(domain) {
 
 export default function CompanyMark({ name = '', domain, size = 'md' }) {
   const [failed, setFailed] = useState(false);
+  const img = useRef(null);
+  // An image that failed before React hydrated never fires onError; check it once mounted.
+  useEffect(() => {
+    if (img.current?.complete && img.current.naturalWidth === 0) setFailed(true);
+  }, []);
   const dim = size === 'lg' ? 'h-14 w-14 text-lg' : size === 'sm' ? 'h-9 w-9 text-xs' : 'h-11 w-11 text-sm';
   const src = !failed && logoUrl(domain);
   if (src) {
     return (
       <div className={`flex shrink-0 items-center justify-center overflow-hidden rounded-lg border border-canvas-200 bg-white p-1.5 ${dim}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={src} alt={`${name} logo`} className="h-full w-full object-contain" loading="lazy" onError={() => setFailed(true)} />
+        <img ref={img} src={src} alt={`${name} logo`} className="h-full w-full object-contain" loading="lazy" onError={() => setFailed(true)} />
       </div>
     );
   }

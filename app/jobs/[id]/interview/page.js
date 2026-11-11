@@ -28,7 +28,7 @@ export default async function InterviewPrep({ params, searchParams }) {
       <Link href={`/jobs/${job.id}`} className="text-sm text-ink/60 hover:text-brand-600">← {job.title}</Link>
       <p className="eyebrow mt-4">Interview preparation</p>
       <h1 className="page-title mt-1">{job.title} · {job.company}</h1>
-      <div className="mt-4"><Flash error={sp.error} ok={sp.ready && '✦ Your interview prep is ready.'} /></div>
+      <div className="mt-4"><Flash error={sp.error} ok={sp.ready && 'Your interview prep is ready.'} /></div>
 
       {!d ? (
         <div className="card mt-6 p-8">
@@ -37,7 +37,7 @@ export default async function InterviewPrep({ params, searchParams }) {
           {aiEnabled() ? (
             <form action={prepareInterviewAction} className="mt-5 flex flex-wrap items-center gap-3">
               <input type="hidden" name="jobId" value={job.id} />
-              <SubmitButton pendingText="Preparing… (about a minute)">✦ Prepare me for this interview</SubmitButton>
+              <SubmitButton pendingText="Preparing… (about a minute)">Prepare me for this interview</SubmitButton>
               <span className="text-xs text-ink/50">{CV_LIMITS.interview[plan]} {CV_LIMITS.interview.label}</span>
             </form>
           ) : <p className="mt-4 text-sm text-ink/60">AI features are not enabled on this site yet.</p>}

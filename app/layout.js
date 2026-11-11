@@ -1,4 +1,10 @@
-import '@fontsource-variable/inter';
+import '@fontsource/poppins/500.css';
+import '@fontsource/poppins/600.css';
+import '@fontsource/poppins/700.css';
+import '@fontsource/noto-sans/400.css';
+import '@fontsource/noto-sans/500.css';
+import '@fontsource/noto-sans/600.css';
+import '@fontsource/noto-sans/700.css';
 import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';

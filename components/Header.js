@@ -16,67 +16,62 @@ export default async function Header() {
   const employer = user?.role === 'employer';
 
   const nav = employer
-    ? [['/employers', 'Dashboard'], ['/employers/candidates', 'Find candidates'], ['/headhunters', 'Headhunters'], ['/jobs', 'Jobs']]
-    : [['/jobs', 'Jobs'], ...(user ? [['/matches', 'My matches'], ['/cv', 'CV Studio']] : []), ['/headhunters', 'Headhunters'], ['/salaries', 'Salaries']];
+    ? [['/employers', 'Dashboard'], ['/employers/candidates', 'Search candidates'], ['/headhunters', 'Headhunters'], ['/jobs', 'Jobs']]
+    : [['/jobs', 'Jobs'], ['/companies', 'Companies'], ['/headhunters', 'Headhunters'], ['/cv', 'CV Builder'], ['/salaries', 'Salaries']];
   const menu = employer
     ? [['/employers', 'Dashboard'], ['/employers/profile', user.recruiter_type === 'headhunter' ? 'My headhunter profile' : 'Company profile'], ['/employers/credits', `Credits (${user.credits})`]]
-    : [['/dashboard', 'Dashboard'], ['/profile', 'Profile & privacy'], ['/cv', 'CV Studio'], ['/alerts', 'Job alerts'], ['/pricing', user?.plan === 'premium' ? 'Premium ✓' : 'Go Premium']];
+    : [['/dashboard', 'My applications'], ['/matches', 'Recommended jobs'], ['/profile', 'Profile & privacy'], ['/cv', 'My CVs'], ['/alerts', 'Job alerts'], ['/pricing', user?.plan === 'premium' ? 'Premium ✓' : 'Upgrade to Premium']];
 
   return (
-    <header className="sticky top-0 z-30 bg-shell text-white shadow-[0_1px_0_rgba(255,255,255,0.06)]">
-      <div className="container-x flex h-14 items-center gap-4">
-        <Logo dark />
-        <nav className="ml-2 hidden items-center gap-1 text-sm lg:flex">
+    <header className="sticky top-0 z-30 border-b border-canvas-200 bg-white">
+      <div className="container-x flex h-16 items-center gap-6">
+        <Logo />
+        <nav className="hidden items-center gap-1 text-[15px] font-medium text-ink/75 lg:flex">
           {nav.map(([href, label]) => (
-            <Link key={href} href={href} className="rounded-md px-3 py-1.5 text-white/80 hover:bg-white/10 hover:text-white">{label}</Link>
+            <Link key={href} href={href} className="rounded-md px-3 py-2 hover:bg-canvas-50 hover:text-brand-600">{label}</Link>
           ))}
         </nav>
-        <form action="/jobs" className="ml-auto hidden max-w-xs flex-1 md:block">
-          <label className="relative block">
-            <span className="sr-only">Search jobs</span>
-            <Icon d="m21 21-4.3-4.3M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
-            <input name="q" placeholder="Search jobs" className="w-full rounded-full border border-white/15 bg-white/10 py-1.5 pl-9 pr-3 text-sm text-white placeholder:text-white/50 focus:border-white/40 focus:bg-white/15 focus:outline-none" />
-          </label>
-        </form>
-        <div className="ml-auto flex items-center gap-1 md:ml-0">
+        <div className="ml-auto flex items-center gap-2">
           {user ? (
             <>
-              <Link href="/messages" className="relative rounded-md p-2 text-white/80 hover:bg-white/10 hover:text-white" aria-label={`Messages${unread ? `, ${unread} unread` : ''}`}>
+              <Link href="/messages" className="relative rounded-full p-2 text-ink/70 hover:bg-canvas-50 hover:text-brand-600" aria-label={`Messages${unread ? `, ${unread} unread` : ''}`}>
                 <Icon d="M4 5h16v11H8l-4 4V5Z" />
-                {unread > 0 && <span className="absolute right-0.5 top-0.5 min-w-[18px] rounded-full bg-accent-500 px-1 text-center text-[11px] font-bold leading-[18px]">{unread > 9 ? '9+' : unread}</span>}
+                {unread > 0 && <span className="absolute right-0 top-0 min-w-[18px] rounded-full bg-negative px-1 text-center text-[11px] font-bold leading-[18px] text-white">{unread > 9 ? '9+' : unread}</span>}
               </Link>
               <details className="relative">
-                <summary className="flex cursor-pointer list-none items-center gap-2 rounded-md py-1 pl-1 pr-2 hover:bg-white/10 [&::-webkit-details-marker]:hidden">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-xs font-bold">{initials(user.name)}</span>
-                  <span className="hidden text-sm sm:block">{user.name.split(' ')[0]}</span>
-                  {user.plan === 'premium' && <span className="hidden rounded bg-accent-500 px-1.5 py-0.5 text-[10px] font-bold uppercase sm:block">Premium</span>}
+                <summary className="flex cursor-pointer list-none items-center gap-2 rounded-full border border-canvas-200 py-1 pl-1 pr-3 hover:border-brand-200 [&::-webkit-details-marker]:hidden">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-white">{initials(user.name)}</span>
+                  <span className="hidden text-sm font-medium sm:block">{user.name.split(' ')[0]}</span>
+                  <Icon d="m6 9 6 6 6-6" className="h-4 w-4 text-ink/50" />
                 </summary>
-                <div className="absolute right-0 mt-2 w-60 overflow-hidden rounded-xl bg-white py-1 text-sm text-ink shadow-raised">
+                <div className="absolute right-0 mt-2 w-64 overflow-hidden rounded-xl border border-canvas-200 bg-white py-1 text-sm shadow-raised">
                   <div className="border-b border-canvas-100 px-4 py-3">
-                    <p className="font-semibold">{user.name}</p>
+                    <p className="font-semibold">{user.name} {user.plan === 'premium' && <span className="ml-1 rounded bg-accent-500 px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">Premium</span>}</p>
                     <p className="truncate text-xs text-ink/55">{employer ? `${user.company || ''} · ${user.recruiter_type === 'headhunter' ? 'Headhunter' : 'Employer'}` : user.email}</p>
                   </div>
-                  {[...nav.filter(([h]) => !menu.some(([m]) => m === h)).map((n) => [...n, 'lg:hidden']), ...menu].map(([href, label, cls]) => (
+                  {[...nav.map((n) => [...n, 'lg:hidden']), ...menu].map(([href, label, cls]) => (
                     <Link key={href + label} href={href} className={`block px-4 py-2 hover:bg-canvas-50 ${cls || ''}`}>{label}</Link>
                   ))}
                   <form action={logout} className="border-t border-canvas-100">
-                    <button className="w-full px-4 py-2 text-left hover:bg-canvas-50">Log out</button>
+                    <button className="w-full px-4 py-2 text-left text-negative hover:bg-canvas-50">Log out</button>
                   </form>
                 </div>
               </details>
             </>
           ) : (
             <>
-              <Link href="/employers" className="hidden rounded-md px-3 py-1.5 text-sm text-white/80 hover:bg-white/10 sm:block">For employers</Link>
-              <Link href="/login" className="rounded-md px-3 py-1.5 text-sm text-white/90 hover:bg-white/10">Log in</Link>
-              <Link href="/signup" className="rounded-lg bg-brand-500 px-3.5 py-1.5 text-sm font-semibold hover:bg-brand-600">Sign up</Link>
+              <Link href="/login" className="btn border border-brand-500 !py-2 text-brand-600 hover:bg-brand-50">Login</Link>
+              <Link href="/signup" className="btn-accent !py-2">Register</Link>
+              <span className="mx-1 hidden h-6 w-px bg-canvas-200 md:block" />
+              <Link href="/employers" className="hidden text-sm font-medium text-ink/70 hover:text-brand-600 md:block">For employers</Link>
             </>
           )}
         </div>
       </div>
       {!user && (
-        <nav className="container-x flex gap-1 overflow-x-auto pb-2 text-sm lg:hidden">
-          {nav.map(([href, label]) => <Link key={href} href={href} className="whitespace-nowrap rounded-md px-3 py-1 text-white/80 hover:bg-white/10">{label}</Link>)}
+        <nav className="container-x flex gap-1 overflow-x-auto border-t border-canvas-100 py-1.5 text-sm font-medium lg:hidden">
+          {nav.map(([href, label]) => <Link key={href} href={href} className="whitespace-nowrap rounded-md px-3 py-1 text-ink/70 hover:text-brand-600">{label}</Link>)}
+          <Link href="/employers" className="whitespace-nowrap rounded-md px-3 py-1 text-ink/70 md:hidden">For employers</Link>
         </nav>
       )}
     </header>

@@ -42,7 +42,7 @@ export default async function Pipeline({ params, searchParams }) {
         </div>
         {aiEnabled() && applicants.length > 0 && (
           <form action={scoreApplicants}><input type="hidden" name="jobId" value={job.id} />
-            <SubmitButton pendingText="Scoring applicants…">✦ Score applicants with AI</SubmitButton></form>
+            <SubmitButton pendingText="Scoring applicants…">Score applicants with AI</SubmitButton></form>
         )}
       </div>
       <div className="mt-4"><Flash error={sp.error} ok={sp.scored && 'Applicants scored and sorted by fit.'} /></div>
@@ -68,7 +68,7 @@ export default async function Pipeline({ params, searchParams }) {
                   <p className="text-xs text-ink/50">{[a.location, a.years_experience && `${a.years_experience} yrs`, `applied ${timeAgo(a.created_at).toLowerCase()}`].filter(Boolean).join(' · ')}</p>
                 </div>
               </div>
-              {a.ai_reason && <p className="mt-3 rounded-lg bg-brand-50 px-3 py-2 text-sm text-ink/80">✦ {a.ai_reason}</p>}
+              {a.ai_reason && <p className="mt-3 rounded-lg bg-brand-50 px-3 py-2 text-sm text-ink/80">{a.ai_reason}</p>}
               <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-canvas-100 pt-4 text-sm">
                 <a href={`/api/cv/${a.id}?job=${job.id}`} className="font-semibold text-brand-600">{a.cv_id ? 'Tailored CV' : 'CV'} ↓</a>
                 <a href={`mailto:${a.email}`} className="text-brand-600">Email</a>

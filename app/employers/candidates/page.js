@@ -27,7 +27,7 @@ function CandidateCard({ c, match, back }) {
         </div>
         {match && <MatchBadge score={match.score} />}
       </div>
-      {match?.reason && <p className="mt-2 rounded-lg bg-brand-50 px-3 py-2 text-sm text-ink/80">✦ {match.reason}</p>}
+      {match?.reason && <p className="mt-2 rounded-lg bg-brand-50 px-3 py-2 text-sm text-ink/80">{match.reason}</p>}
       {c.summary && <p className="mt-2 line-clamp-3 text-sm text-ink/65">{c.summary}</p>}
       {titles.length > 0 && <div className="mt-2 flex flex-wrap gap-1.5">{titles.map((t) => <span key={t} className="chip-info">{t}</span>)}</div>}
       {c.skills && <p className="mt-2 text-xs text-ink/55">{c.skills.split(',').slice(0, 8).join(' · ')}</p>}
@@ -87,7 +87,7 @@ export default async function FindCandidates({ searchParams }) {
         <aside className="space-y-4">
           {aiEnabled() && (
             <form action={aiTalentSearch} className="card space-y-3 p-5">
-              <h2 className="section-title">✦ AI talent search</h2>
+              <h2 className="section-title">AI talent search</h2>
               <p className="text-sm text-ink/60">Describe the role, or pick one of your jobs, and AI ranks the best-fit candidates.</p>
               {myJobs.length > 0 && (
                 <select name="jobId" className="input" aria-label="Use one of your jobs" defaultValue="">
@@ -110,7 +110,7 @@ export default async function FindCandidates({ searchParams }) {
         <section>
           {saved && (
             <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-lg bg-brand-50 px-4 py-3 text-sm">
-              <span>✦ AI-ranked for: <b>{saved.role_text.split('\n')[0].slice(0, 90)}</b></span>
+              <span>AI-ranked for: <b>{saved.role_text.split('\n')[0].slice(0, 90)}</b></span>
               <Link href="/employers/candidates" className="text-brand-600">Clear</Link>
             </div>
           )}

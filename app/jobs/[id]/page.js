@@ -126,7 +126,7 @@ export default async function JobPage({ params, searchParams }) {
 
           {candidate && !expired && (
             <div className="card p-5">
-              <p className="eyebrow mb-3">✦ AI application tools</p>
+              <p className="eyebrow mb-3">AI application tools</p>
               {!ai ? (
                 <p className="text-sm text-ink/60">AI tools (tailored CV, fit check, interview prep) are being switched on for this site. Check back soon.</p>
               ) : (
@@ -135,7 +135,7 @@ export default async function JobPage({ params, searchParams }) {
                     {tailored ? <Link href={`/cv/${tailored.id}`} className="btn-ghost w-full">Open your tailored CV →</Link>
                       : user ? (
                         <form action={tailorCvForJob}><input type="hidden" name="jobId" value={job.id} />
-                          <SubmitButton className="btn-primary w-full" pendingText="Tailoring your CV… (up to a minute)">✦ Generate CV for this job</SubmitButton></form>
+                          <SubmitButton className="btn-primary w-full" pendingText="Tailoring your CV… (up to a minute)">Generate CV for this job</SubmitButton></form>
                       ) : loginFor('generate your CV')}
                   </AiTool>
                   <AiTool title="How well do you fit?" text={match && !match.detailed ? match.reason : 'Strengths, gaps and what to emphasise.'}>
@@ -188,7 +188,7 @@ function FitReport({ match }) {
   return (
     <section id="fit" className="mb-6 scroll-mt-24 rounded-xl border border-brand-200 bg-brand-50 p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-base font-semibold">✦ Your fit for this role</h2>
+        <h2 className="text-base font-semibold">Your fit for this role</h2>
         <MatchBadge score={match.score} />
       </div>
       <p className="mt-2 text-sm text-ink/80">{match.reason}</p>

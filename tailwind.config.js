@@ -1,27 +1,26 @@
 /** @type {import('tailwindcss').Config} */
-// Enterprise look in the spirit of SAP Fiori (Horizon): dark shell bar, blue primary,
-// neutral canvas, white cards, Inter. PeakRole's own palette and brand.
+// Indian job-portal style: white header, search first, dense job cards. PeakRole's own palette.
 module.exports = {
   content: ['./app/**/*.{js,jsx}', './components/**/*.{js,jsx}'],
   theme: {
     extend: {
       colors: {
-        ink: '#1d2d3e',
-        shell: { DEFAULT: '#12263f', 700: '#0b1b2e', 600: '#1b3554' },
-        brand: { 50: '#eef5ff', 100: '#dbeafe', 200: '#b6d4fd', 500: '#0070f2', 600: '#0064d9', 700: '#0057be', 900: '#0b2f5c' },
-        canvas: { 50: '#f5f6f7', 100: '#eceef1', 200: '#d9dee3' },
-        accent: { 500: '#e76500', 600: '#c35500' },
-        positive: '#188918',
-        critical: '#e76500',
-        negative: '#d20a0a',
+        ink: '#1b1f2a',
+        shell: { DEFAULT: '#ffffff', 700: '#f4f5f8', 600: '#eceef3' },
+        brand: { 50: '#eef2ff', 100: '#dfe6fe', 200: '#bccafc', 500: '#1f4fd1', 600: '#1a43b3', 700: '#163897', 900: '#0f2566' },
+        canvas: { 50: '#f4f5f8', 100: '#eceef3', 200: '#dde1e8' },
+        accent: { 500: '#f29900', 600: '#c77d00' },
+        positive: '#1a7f37',
+        critical: '#c77d00',
+        negative: '#c62828',
       },
       fontFamily: {
-        sans: ['"Inter Variable"', 'Inter', 'ui-sans-serif', 'system-ui', '-apple-system', '"Segoe UI"', 'Roboto', 'sans-serif'],
-        display: ['"Inter Variable"', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['"Noto Sans"', 'ui-sans-serif', 'system-ui', '-apple-system', '"Segoe UI"', 'Roboto', 'sans-serif'],
+        display: ['Poppins', '"Noto Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        card: '0 0 0 1px rgba(29,45,62,0.06), 0 2px 4px rgba(29,45,62,0.06)',
-        raised: '0 0 0 1px rgba(29,45,62,0.06), 0 8px 24px rgba(29,45,62,0.12)',
+        card: '0 1px 2px rgba(27,31,42,0.05)',
+        raised: '0 6px 20px rgba(27,31,42,0.10)',
       },
     },
   },
