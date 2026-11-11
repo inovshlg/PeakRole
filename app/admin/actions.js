@@ -7,6 +7,7 @@ import { getDb } from '@/lib/db.mjs';
 import { requireAdmin } from '@/lib/auth';
 import { looksLikeSpam } from '@/lib/spam.mjs';
 import { sendEmail, siteUrl, esc } from '@/lib/email.mjs';
+import { runIngest } from '@/lib/ingest.mjs';
 
 const str = (fd, k, max = 500) => String(fd.get(k) ?? '').trim().slice(0, max);
 const id = (fd, k) => { const n = Number(fd.get(k)); return Number.isInteger(n) && n > 0 ? n : null; };
@@ -109,4 +110,12 @@ export async function submitEnquiry(formData) {
     } catch (err) { console.error('Enquiry email failed', err.message); }
   }
   redirect('/employers?sent=1');
+}
+
+/** Admin: run the job import now (same as the daily cron). */
+export async function runImportNow() {
+  await requireAdmin();
+  await runIngest(await getDb(), console.log, 'admin');
+  revalidatePath('/admin');
+  redirect('/admin?imported=1#imports');
 }

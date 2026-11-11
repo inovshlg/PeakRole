@@ -8,6 +8,7 @@ export const maxDuration = 300;
 export async function GET(request) {
   const denied = cronAuthError(request);
   if (denied) return denied;
-  const result = await runIngest(await getDb());
+  const manual = !(request.headers.get('authorization') || '').startsWith('Bearer');
+  const result = await runIngest(await getDb(), console.log, manual ? 'link' : 'cron');
   return Response.json(result);
 }
