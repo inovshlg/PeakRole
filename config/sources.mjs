@@ -11,9 +11,9 @@
  */
 export default {
   indiaOnly: true,
-  greenhouse: ['stripe', 'databricks', 'cloudflare', 'rubrik', 'okta', 'gitlab', 'postman', 'airbnb'],
+  greenhouse: ['stripe', 'databricks', 'rubrik', 'okta', 'gitlab', 'airbnb'],
   lever: ['cred', 'meesho', 'zeta'],
-  ashby: ['zepto', 'notion', 'ramp'],
+  ashby: ['notion'],
   // Each page is one Adzuna API call returning up to 50 jobs. A run is also capped by
   // ADZUNA_MAX_CALLS (default 6), so a trial key with 25 calls lasts about 4 runs.
   // Once Adzuna approves your production key, raise ADZUNA_MAX_CALLS and add queries.
