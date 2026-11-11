@@ -1,5 +1,5 @@
 import { getDb } from '@/lib/db.mjs';
-import { getCurrentUser } from '@/lib/auth';
+import { getCurrentUser, isAdmin } from '@/lib/auth';
 import { normalizeCv } from '@/lib/cv.mjs';
 import { renderCvPdf } from '@/components/cv/CvPdf';
 
@@ -18,7 +18,7 @@ export async function GET(request, { params }) {
   if (!Number.isInteger(id) || id <= 0) return new Response('Not found', { status: 404 });
   const db = await getDb();
 
-  let allowed = viewer.id === id;
+  let allowed = viewer.id === id || isAdmin(viewer);
   if (!allowed && viewer.role === 'employer') {
     allowed = !!(await db.get(
       `SELECT 1 AS ok FROM unlocks WHERE recruiter_id = $1 AND candidate_id = $2

@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { getDb } from '@/lib/db.mjs';
 import { getJob } from '@/lib/jobs.mjs';
-import { requireUser } from '@/lib/auth';
+import { requireUser, destroySession } from '@/lib/auth';
 import { aiEnabled, AiError } from '@/lib/ai.mjs';
 import { checkAiQuota, recordAiUse, normalizeCv, cvToText } from '@/lib/cv.mjs';
 import { startConversation, sendMessage, getConversation, MessagingError } from '@/lib/messaging.mjs';
@@ -61,9 +61,12 @@ export async function updateRecruiterProfile(formData) {
 export async function updatePrivacy(formData) {
   const user = await requireUser('/profile', 'candidate');
   const visibility = String(formData.get('visibility'));
+  const consent = formData.get('consent') === 'yes';
   await (await getDb()).run(
-    'UPDATE users SET visible_to_recruiters = $1, visibility = $2, blocked_companies = $3 WHERE id = $4',
-    [visibility === 'hidden' ? 0 : 1, visibility === 'headhunters' ? 'headhunters' : 'all', str(formData, 'blocked_companies', 500) || null, user.id]
+    `UPDATE users SET visible_to_recruiters = $1, visibility = $2, blocked_companies = $3, digest_opt_in = $4,
+       consent_at = CASE WHEN $5::boolean THEN COALESCE(consent_at, now()) ELSE NULL END WHERE id = $6`,
+    [visibility === 'hidden' ? 0 : 1, visibility === 'headhunters' ? 'headhunters' : 'all', str(formData, 'blocked_companies', 500) || null,
+      formData.get('digest') === 'yes' ? 1 : 0, consent, user.id]
   );
   revalidatePath('/profile');
   redirect('/profile?privacy=1#privacy');
@@ -258,4 +261,14 @@ export async function prepareInterviewAction(formData) {
     );
   });
   redirect(`${back}?ready=1`);
+}
+
+/** Permanently delete the signed-in account and everything linked to it (DPDP / GDPR erasure). */
+export async function deleteAccount(formData) {
+  const user = await requireUser('/profile');
+  if (String(formData.get('confirm')).trim() !== 'DELETE') fail('/profile', 'Type DELETE to confirm account deletion.');
+  const db = await getDb();
+  await db.run('DELETE FROM users WHERE id = $1', [user.id]); // cascades to CVs, files, applications, messages, sessions
+  await destroySession();
+  redirect('/?deleted=1');
 }

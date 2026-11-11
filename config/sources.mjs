@@ -1,37 +1,30 @@
 /**
- * Which job sources to import.
+ * EWM-TM Jobs sources. Every imported job must mention SAP EWM or SAP TM (see lib/niche.mjs);
+ * anything else is dropped.
  *
- * Adzuna India is the main source of volume (free key: developer.adzuna.com → set
- * ADZUNA_APP_ID / ADZUNA_APP_KEY in Vercel).
- *
- * Company boards: find a company's slug from where its "Careers → Apply" link points:
- *   Greenhouse: boards.greenhouse.io/<slug>   Lever: jobs.lever.co/<slug>   Ashby: jobs.ashbyhq.com/<slug>
- * Global companies post jobs worldwide; with indiaOnly, only roles located in India (or
- * remote roles open to India) are kept. A wrong slug just shows "✗ … 404" in the import log.
+ * JSearch (RapidAPI, Google for Jobs data) is the main worldwide feed. Each run makes at most
+ * JSEARCH_MAX_CALLS requests (default 4) and rotates through the query × country combinations,
+ * so the whole list is refreshed every few days within the free tier.
  */
 export default {
-  indiaOnly: true,
-  greenhouse: ['stripe', 'databricks', 'rubrik', 'okta', 'gitlab', 'airbnb'],
-  lever: ['cred', 'meesho', 'zeta'],
-  ashby: ['notion'],
-  // SmartRecruiters company IDs (jobs.smartrecruiters.com/<ID>); only India postings are requested.
-  smartrecruiters: ['BoschGroup', 'Visa'],
-  // Recruitee (<slug>.recruitee.com) and Workable (apply.workable.com/<slug>) boards.
+  niche: true,
+  jsearch: {
+    queries: ['SAP EWM', 'SAP TM'],
+    countries: ['in', 'de', 'us', 'gb', 'nl', 'be', 'ch', 'ae', 'sg', 'au', 'ca', 'pl'],
+    datePosted: 'week',
+  },
+  // Adzuna (optional, free key): SAP EWM/TM searches in a few countries; capped by ADZUNA_MAX_CALLS (default 6).
+  adzuna: [
+    { country: 'in', queries: ['SAP EWM', 'SAP TM'], pages: 1, maxDaysOld: 30 },
+    { country: 'de', queries: ['SAP EWM', 'SAP TM'], pages: 1, maxDaysOld: 30 },
+    { country: 'gb', queries: ['SAP EWM'], pages: 1, maxDaysOld: 30 },
+  ],
+  // Company boards rarely have EWM/TM roles; add SAP consultancies here if you find their board slugs.
+  greenhouse: [],
+  lever: [],
+  ashby: [],
+  smartrecruiters: [],
   recruitee: [],
   workable: [],
-  // Company website per board slug, used to show company logos.
-  domains: {
-    stripe: 'stripe.com', databricks: 'databricks.com', rubrik: 'rubrik.com', okta: 'okta.com', gitlab: 'gitlab.com',
-    airbnb: 'airbnb.com', cred: 'cred.club', meesho: 'meesho.com', zeta: 'zeta.tech', notion: 'notion.so',
-    BoschGroup: 'bosch.com', Visa: 'visa.com',
-  },
-  // Each page is one Adzuna API call returning up to 50 jobs. A run is also capped by
-  // ADZUNA_MAX_CALLS (default 6), so a trial key with 25 calls lasts about 4 runs.
-  // Once Adzuna approves your production key, raise ADZUNA_MAX_CALLS and add queries.
-  adzuna: {
-    country: 'in',
-    queries: ['director', 'head of', 'senior manager'],
-    pages: 2,
-    maxDaysOld: 30,
-  },
+  domains: {},
 };

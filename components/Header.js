@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getCurrentUser } from '@/lib/auth';
+import { getCurrentUser, isAdmin } from '@/lib/auth';
 import { getDb } from '@/lib/db.mjs';
 import { unreadCount } from '@/lib/messaging.mjs';
 import { initials } from '@/lib/format.mjs';
@@ -17,10 +17,11 @@ export default async function Header() {
 
   const nav = employer
     ? [['/employers', 'Dashboard'], ['/employers/candidates', 'Search candidates'], ['/headhunters', 'Headhunters'], ['/jobs', 'Jobs']]
-    : [['/jobs', 'Jobs'], ['/companies', 'Companies'], ['/headhunters', 'Headhunters'], ['/cv', 'CV Builder'], ['/salaries', 'Salaries']];
+    : [['/sap-ewm-jobs', 'SAP EWM jobs'], ['/sap-tm-jobs', 'SAP TM jobs'], ['/jobs', 'All jobs'], ['/companies', 'Companies'], ['/cv', 'CV Builder']];
+  if (isAdmin(user)) nav.push(['/admin', 'Admin']);
   const menu = employer
     ? [['/employers', 'Dashboard'], ['/employers/profile', user.recruiter_type === 'headhunter' ? 'My headhunter profile' : 'Company profile'], ['/employers/credits', `Credits (${user.credits})`]]
-    : [['/dashboard', 'My applications'], ['/matches', 'Recommended jobs'], ['/profile', 'Profile & privacy'], ['/cv', 'My CVs'], ['/alerts', 'Job alerts'], ['/pricing', user?.plan === 'premium' ? 'Premium ✓' : 'Upgrade to Premium']];
+    : [['/dashboard', 'My applications'], ['/matches', 'Recommended jobs'], ['/profile', 'Profile & privacy'], ['/cv', 'My CVs'], ['/alerts', 'Job alerts']];
 
   return (
     <header className="sticky top-0 z-30 border-b border-canvas-200 bg-white">
@@ -63,7 +64,7 @@ export default async function Header() {
               <Link href="/login" className="btn border border-brand-500 !py-2 text-brand-600 hover:bg-brand-50">Login</Link>
               <Link href="/signup" className="btn-accent !py-2">Register</Link>
               <span className="mx-1 hidden h-6 w-px bg-canvas-200 md:block" />
-              <Link href="/employers" className="hidden text-sm font-medium text-ink/70 hover:text-brand-600 md:block">For employers</Link>
+              <Link href="/employers" className="hidden text-sm font-medium text-ink/70 hover:text-brand-600 md:block">Hire consultants</Link>
             </>
           )}
         </div>
@@ -71,7 +72,7 @@ export default async function Header() {
       {!user && (
         <nav className="container-x flex gap-1 overflow-x-auto border-t border-canvas-100 py-1.5 text-sm font-medium lg:hidden">
           {nav.map(([href, label]) => <Link key={href} href={href} className="whitespace-nowrap rounded-md px-3 py-1 text-ink/70 hover:text-brand-600">{label}</Link>)}
-          <Link href="/employers" className="whitespace-nowrap rounded-md px-3 py-1 text-ink/70 md:hidden">For employers</Link>
+          <Link href="/employers" className="whitespace-nowrap rounded-md px-3 py-1 text-ink/70 md:hidden">Hire consultants</Link>
         </nav>
       )}
     </header>

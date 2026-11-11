@@ -10,6 +10,7 @@ import { parseCv, aiEnabled, AiError } from '@/lib/ai.mjs';
 import { refreshMatches, refreshWaitMinutes, checkFit } from '@/lib/matching.mjs';
 import { hashPassword, verifyPassword, createSession, destroySession, requireUser } from '@/lib/auth';
 import { grantCredits, STARTER_CREDITS } from '@/lib/credits.mjs';
+import { looksLikeSpam } from '@/lib/spam.mjs';
 
 const str = (fd, k) => String(fd.get(k) ?? '').trim();
 const num = (fd, k) => {
@@ -36,14 +37,17 @@ export async function signup(formData) {
   const recruiterType = role === 'employer' ? (chosen === 'headhunter' ? 'headhunter' : 'company') : null;
   const company = str(formData, 'company') || null;
   const q = `&role=${chosen === 'headhunter' ? 'headhunter' : role}`;
+  if (looksLikeSpam(formData)) fail('/signup', 'Please try again.', q);
   if (!name || !/^\S+@\S+\.\S+$/.test(email)) fail('/signup', 'Please enter your name and a valid email.', q);
+  if (role === 'candidate' && formData.get('consent') !== 'yes') fail('/signup', 'Please tick the consent box to create your profile.', q);
   if (password.length < 8) fail('/signup', 'Password must be at least 8 characters.', q);
   if (role === 'employer' && !company) fail('/signup', recruiterType === 'headhunter' ? 'Please enter your firm name (or "Independent").' : 'Please enter your company name.', q);
   const db = await getDb();
   if (await db.get('SELECT 1 FROM users WHERE email = $1', [email])) fail('/signup', 'An account with this email already exists.', q);
   const { id } = await db.get(
-    'INSERT INTO users (email, password_hash, name, role, company, recruiter_type) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
-    [email, hashPassword(password), name, role, company, recruiterType]
+    `INSERT INTO users (email, password_hash, name, role, company, recruiter_type, consent_at, digest_opt_in)
+     VALUES ($1, $2, $3, $4, $5, $6, CASE WHEN $7::boolean THEN now() END, $8) RETURNING id`,
+    [email, hashPassword(password), name, role, company, recruiterType, role === 'candidate', formData.get('digest') === 'yes' ? 1 : 0]
   );
   if (role === 'employer') await grantCredits(db, id, STARTER_CREDITS, 'Welcome credits');
   await createSession(id);
@@ -116,10 +120,17 @@ export async function updateProfile(formData) {
 
   // 1. Save what the user typed.
   await db.run(
-    `UPDATE users SET name = $1, headline = $2, location = $3, desired_salary = $4, years_experience = $5, skills = $6 WHERE id = $7`,
+    `UPDATE users SET name = $1, headline = $2, location = $3, desired_salary = $4, years_experience = $5, skills = $6,
+       sap_modules = $7, s4hana = $8, implementations = $9, phone = $10, current_salary = $11, expected_salary = $12,
+       notice_period = $13, open_relocation = $14, open_remote = $15, open_contract = $16 WHERE id = $17`,
     [
       str(formData, 'name') || user.name, str(formData, 'headline') || null, str(formData, 'location') || null,
-      num(formData, 'desired_salary'), num(formData, 'years_experience'), str(formData, 'skills') || null, user.id,
+      num(formData, 'desired_salary'), num(formData, 'years_experience'), str(formData, 'skills') || null,
+      formData.getAll('sap_modules').map(String).filter((m) => /^[\w /]{1,20}$/.test(m)).join(', ') || null,
+      formData.get('s4hana') ? 1 : 0, num(formData, 'implementations'), str(formData, 'phone').slice(0, 40) || null,
+      str(formData, 'current_salary').slice(0, 60) || null, str(formData, 'expected_salary').slice(0, 60) || null,
+      str(formData, 'notice_period').slice(0, 30) || null,
+      formData.get('open_relocation') ? 1 : 0, formData.get('open_remote') ? 1 : 0, formData.get('open_contract') ? 1 : 0, user.id,
     ]
   );
 

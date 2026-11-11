@@ -23,10 +23,10 @@ export default async function Salaries({ searchParams }) {
     <div className="container-x max-w-5xl py-8">
       <p className="eyebrow">Know your worth</p>
       <h1 className="page-title mt-1">Salary insights</h1>
-      <p className="mt-1 text-ink/60">Annual CTC ranges from live listings on PeakRole that show a salary.</p>
+      <p className="mt-1 text-ink/60">Annual salary ranges from live SAP EWM/TM listings that show a salary.</p>
       <form className="card mt-6 grid gap-3 p-4 sm:grid-cols-[2fr_1fr_auto]">
         <input name="q" defaultValue={q} required className="input" placeholder="Job title, e.g. Product Manager" aria-label="Job title" />
-        <select name="location" defaultValue={location} className="input" aria-label="City"><option value="">All of {MARKET.country}</option>{MARKET.cities.map((c) => <option key={c}>{c}</option>)}</select>
+        <select name="location" defaultValue={location} className="input" aria-label="City"><option value="">All locations</option>{MARKET.cities.map((c) => <option key={c}>{c}</option>)}</select>
         <button className="btn-primary">Show salaries</button>
       </form>
 

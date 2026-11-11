@@ -1,4 +1,51 @@
-# PeakRole: senior jobs in India, salaries up front, AI CVs and matching
+# EWM-TM Jobs: SAP EWM & SAP TM jobs and talent network
+
+A niche job board and consent-based talent network for SAP Supply Chain consultants (SAP EWM and SAP TM).
+It started as the PeakRole codebase; the general features are described further down.
+
+## What it does
+- **Worldwide job feed:**
+  - **JSearch (RapidAPI)** is the main source, plus optional Adzuna. Jobs are cached in the database and refreshed by a daily cron; the API is never called on page views.
+  - **Only EWM/TM roles are kept** (`lib/niche.mjs`), each tagged SAP EWM / SAP TM / both, with country detection.
+  - **Duplicates and expired listings** are removed.
+  - **Filters:** module, country, remote, permanent/contract, date posted, salary.
+- **SEO pages:**
+  - `/sap-ewm-jobs`, `/sap-tm-jobs`, and per-country pages such as `/sap-ewm-jobs/germany`, with titles like "SAP EWM jobs in Germany".
+  - Job pages carry Google for Jobs structured data, and there are `sitemap.xml` and `robots.txt` files.
+- **Candidate profiles:**
+  - SAP modules, S/4HANA, implementations, current and expected salary, notice period, and openness to relocation, remote or contract.
+  - CV upload (PDF/DOCX) read by AI.
+  - **Mandatory sharing consent** with a timestamp; candidates can withdraw consent or **delete their account** at any time (DPDP / GDPR).
+- **Admin dashboard** (`/admin`, only for emails in `ADMIN_EMAILS`):
+  - Candidate search by module, experience, location, notice period, S/4HANA, contract and tags.
+  - CV download, private notes and tags.
+  - Clients, requirements and submissions (submitted → interview → offer → joined) with placement fees.
+  - Website hiring enquiries arrive here.
+- **Alerts:**
+  - New jobs are auto-posted to a **Telegram channel**, each job once, at most 10 per run.
+  - A **weekly email digest** goes to candidates who opted in.
+- **Spam protection:** a honeypot field and a minimum time before a form can be submitted, on sign-up and enquiry forms.
+- **Disclaimer:** not affiliated with SAP SE (shown in the footer).
+
+## Environment variables (Vercel → Settings → Environment Variables)
+| Variable | Required | What |
+|---|---|---|
+| `DATABASE_URL` | yes | Added by the Neon integration |
+| `CRON_SECRET` | yes | Any string of 8+ characters; also lets you run `/api/cron/ingest?key=…` by hand |
+| `ADMIN_EMAILS` | yes | Your login email(s), comma separated, which unlock `/admin` |
+| `JSEARCH_API_KEY` | yes | Your RapidAPI key (JSearch) |
+| `JSEARCH_MAX_CALLS` | no | JSearch requests per daily run (default 4) |
+| `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHANNEL_ID` | no | Bot token from @BotFather and your channel (e.g. `@ewmtmjobs`); the bot must be a channel admin |
+| `RESEND_API_KEY`, `ALERTS_FROM_EMAIL` | no | Weekly digest, alerts and enquiry notification emails |
+| `CONTACT_EMAIL` | no | Shown on the privacy notice |
+| `ANTHROPIC_API_KEY` | no | AI CV reading, tailoring, matching |
+| `ADZUNA_APP_ID`, `ADZUNA_APP_KEY` | no | Extra source (SAP EWM/TM searches in IN, DE, GB) |
+
+Cron schedules (`vercel.json`): import daily at 05:17 UTC, alerts daily, digest Mondays at 06:23 UTC.
+
+---
+
+# Platform features (inherited from PeakRole)
 
 A job platform with the same features as JobLeads, in its own design:
 

@@ -8,29 +8,48 @@ import { FEATURE_COST, FEATURE_DAYS } from '@/lib/credits.mjs';
 import { formatSalary, timeAgo } from '@/lib/format.mjs';
 import Flash from '@/components/Flash';
 import SubmitButton from '@/components/SubmitButton';
+import SpamGuard from '@/components/SpamGuard';
+import { submitEnquiry } from '@/app/admin/actions';
 
-export const metadata = { title: 'Employers' };
+export const metadata = { title: 'Hire SAP EWM & TM consultants' };
 
-function Landing({ user }) {
+function Landing({ user, sent, error }) {
   return (
     <>
       <section className="bg-brand-900 text-white">
-        <div className="container-x py-16">
-          <p className="text-sm text-white/60">For employers & headhunters</p>
-          <h1 className="mt-2 max-w-3xl text-3xl font-bold leading-tight text-white sm:text-[44px]">Hire senior talent in India, faster.</h1>
-          <p className="mt-4 max-w-xl text-lg text-white/70">Post roles for free, search AI-ranked candidates, and manage applicants in one pipeline.</p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/signup?role=employer" className="btn-primary">I’m hiring for my company</Link>
-            <Link href="/signup?role=headhunter" className="btn border border-white/30 text-white hover:bg-white/10">I’m a headhunter</Link>
-            <Link href="/login?next=/employers" className="btn text-white/80 hover:bg-white/10">Log in</Link>
-          </div>
-          {user && <p className="mt-6 text-sm text-white/60">You’re signed in as a job seeker. Create a separate recruiter account to hire.</p>}
+        <div className="container-x py-14">
+          <p className="text-sm text-white/70">For companies & SAP partners</p>
+          <h1 className="mt-2 max-w-3xl text-3xl font-bold leading-tight text-white sm:text-[44px]">Hire SAP EWM & TM consultants, faster.</h1>
+          <p className="mt-4 max-w-2xl text-lg text-white/75">Tell us the role. We shortlist pre-screened consultants from our network (permanent, contract or remote) and you only pay when someone joins.</p>
         </div>
       </section>
-      <section className="container-x mt-10 grid gap-4 md:grid-cols-3">
-        {[['Free job posts', 'Publish roles in minutes. Applicants apply with CVs tailored to your job.'], ['AI talent search', 'Paste a job description and get the best-fit candidates, ranked and explained.'], ['Applicant pipeline', 'Move applicants from New to Hired, with AI fit scores on every profile.']].map(([t, d]) => (
-          <div key={t} className="card p-6"><h2 className="section-title">{t}</h2><p className="mt-2 text-sm text-ink/60">{d}</p></div>
-        ))}
+      <section className="container-x mt-10 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        <div className="space-y-4">
+          {[['Niche network', 'Consultants with hands-on S/4HANA EWM and TM project experience: functional, technical and architects.'],
+            ['Shortlist in days', 'We send 3–5 matched profiles with notice period, rate and availability, all with the candidate’s consent.'],
+            ['Pay on success', 'No retainer. A placement fee only when a candidate joins.']].map(([t, d]) => (
+            <div key={t} className="card p-5"><h2 className="text-base font-semibold">{t}</h2><p className="mt-1 text-sm text-ink/65">{d}</p></div>
+          ))}
+          {user && <p className="text-sm text-ink/55">You’re signed in as a job seeker; you can still send a hiring enquiry.</p>}
+        </div>
+        <form action={submitEnquiry} className="card space-y-3 p-6">
+          <h2 className="section-title">Tell us what you need</h2>
+          <Flash error={error} ok={sent && 'Thanks! We’ll be in touch within one working day.'} />
+          <SpamGuard />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <input name="company" required className="input" placeholder="Company" aria-label="Company" />
+            <input name="name" className="input" placeholder="Your name" aria-label="Your name" />
+            <input name="email" type="email" required className="input" placeholder="Work email" aria-label="Work email" />
+            <input name="phone" className="input" placeholder="Phone (optional)" aria-label="Phone" />
+          </div>
+          <input name="role" required className="input" placeholder="Role, e.g. SAP EWM Lead (S/4HANA, MFS)" aria-label="Role" />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <select name="module" className="input" aria-label="Module"><option value="">Module</option>{['SAP EWM', 'SAP TM', 'SAP EWM & TM'].map((m) => <option key={m}>{m}</option>)}</select>
+            <input name="location" className="input" placeholder="Location / remote" aria-label="Location" />
+          </div>
+          <textarea name="details" rows={4} className="input" placeholder="Must-have skills, duration or permanent, budget, start date" aria-label="Details" />
+          <button className="btn-primary w-full">Send enquiry</button>
+        </form>
       </section>
     </>
   );
@@ -39,7 +58,7 @@ function Landing({ user }) {
 export default async function EmployersPage({ searchParams }) {
   const sp = await searchParams;
   const user = await getCurrentUser();
-  if (!user || user.role !== 'employer') return <Landing user={user} />;
+  if (!user || user.role !== 'employer') return <Landing user={user} sent={sp.sent} error={sp.error} />;
 
   const db = await getDb();
   const [jobs, stats] = await Promise.all([

@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { getDb } from '@/lib/db.mjs';
 import { searchJobs, facetCounts } from '@/lib/jobs.mjs';
-import { MARKET, LOCATION_ALIASES } from '@/lib/market.mjs';
+import { MARKET } from '@/lib/market.mjs';
+import { countryByCode } from '@/lib/niche.mjs';
 import { slugify } from '@/lib/format.mjs';
 import JobCard from '@/components/JobCard';
 import SearchBar from '@/components/SearchBar';
@@ -9,7 +10,7 @@ import CompanyMark from '@/components/CompanyMark';
 
 export const dynamic = 'force-dynamic';
 
-const POPULAR = ['Product Manager', 'Engineering Manager', 'Finance Controller', 'Sales Director', 'Data Scientist', 'HR Head'];
+const POPULAR = ['EWM consultant', 'Embedded EWM', 'SAP TM functional', 'EWM ABAP', 'MFS', 'Freight settlement'];
 const CATEGORY_ICON = {
   Engineering: 'M8 9l-4 3 4 3M16 9l4 3-4 3M13 6l-2 12', 'Data & AI': 'M4 19V9M10 19V5M16 19v-7M22 19H2', Product: 'M12 3l8 4.5v9L12 21l-8-4.5v-9z',
   Design: 'M12 3a9 9 0 1 0 9 9c0-1.5-1.5-2-3-2h-2a2 2 0 0 1-2-2V6c0-1.5-.5-3-2-3z', Sales: 'M3 17l6-6 4 4 8-8M15 7h6v6', Marketing: 'M3 11v2l13 5V6zM16 9a3 3 0 0 1 0 6',
@@ -23,27 +24,26 @@ function Icon({ d }) {
 
 export default async function Home() {
   const db = await getDb();
-  const cityCount = (city) => db.get(
-    "SELECT COUNT(*)::int AS n FROM jobs WHERE status = 'active' AND location ILIKE ANY($1::text[])",
-    [(LOCATION_ALIASES[city.toLowerCase()] ?? [city.toLowerCase()]).map((x) => `%${x}%`)]
-  ).then((r) => [city, r.n]);
-  const [stats, { jobs }, companies, cities] = await Promise.all([
+  const [stats, { jobs }, companies, countries, modules] = await Promise.all([
     facetCounts(db),
     searchJobs(db, { pageSize: 6 }),
     db.all(
       `SELECT company, MAX(company_domain) AS domain, COUNT(*)::int AS n FROM jobs WHERE status = 'active'
        GROUP BY company ORDER BY (MAX(company_domain) IS NOT NULL) DESC, n DESC LIMIT 12`
     ),
-    Promise.all(MARKET.cities.map(cityCount)),
+    db.all("SELECT country, COUNT(*)::int AS n FROM jobs WHERE status = 'active' AND country IS NOT NULL GROUP BY country ORDER BY n DESC LIMIT 10"),
+    db.get(`SELECT COUNT(*) FILTER (WHERE category ILIKE '%EWM%')::int AS ewm, COUNT(*) FILTER (WHERE category ILIKE '%TM%')::int AS tm,
+              COUNT(*) FILTER (WHERE employment_type = 'Contract')::int AS contract, COUNT(*) FILTER (WHERE remote = 1)::int AS remote
+            FROM jobs WHERE status = 'active'`),
   ]);
 
   return (
     <>
       <section className="border-b border-canvas-200 bg-white">
         <div className="container-x py-12 text-center sm:py-16">
-          <h1 className="text-3xl font-bold leading-tight sm:text-[44px]">Find your next senior role in India</h1>
+          <h1 className="text-3xl font-bold leading-tight sm:text-[44px]">SAP EWM & SAP TM jobs worldwide</h1>
           <p className="mx-auto mt-3 max-w-2xl text-ink/65 sm:text-lg">
-            {stats.total.toLocaleString('en-IN')} open jobs from {stats.companies.toLocaleString('en-IN')} companies, with salaries shown on most listings.
+            {stats.total.toLocaleString('en-IN')} open consultant, lead and architect roles from {stats.companies.toLocaleString('en-IN')} companies. Permanent, contract and remote, updated daily.
           </p>
           <div className="mx-auto mt-8 max-w-4xl text-left"><SearchBar withLevel /></div>
           <div className="mt-5 flex flex-wrap justify-center gap-x-2 gap-y-2 text-sm">
@@ -81,30 +81,35 @@ export default async function Home() {
         </div>
         <aside className="space-y-4">
           <div className="card p-5">
-            <h2 className="text-lg">Jobs by city</h2>
+            <h2 className="text-lg">Jobs by country</h2>
             <ul className="mt-3 divide-y divide-canvas-100 text-[15px]">
-              {cities.map(([c, n]) => (
-                <li key={c}><Link href={`/jobs?location=${encodeURIComponent(c)}`} className="flex justify-between py-2.5 hover:text-brand-600"><span>Jobs in {c}</span><span className="text-ink/50">{n}</span></Link></li>
-              ))}
-              <li><Link href="/jobs?remote=1" className="flex justify-between py-2.5 hover:text-brand-600"><span>Remote jobs</span><span className="text-ink/50">→</span></Link></li>
+              {countries.map(({ country, n }) => {
+                const c = countryByCode(country);
+                return c ? <li key={country}><Link href={`/sap-ewm-jobs/${c.slug}`} className="flex justify-between py-2.5 hover:text-brand-600"><span>SAP jobs in {c.name}</span><span className="text-ink/50">{n}</span></Link></li> : null;
+              })}
+              <li><Link href="/jobs?remote=1" className="flex justify-between py-2.5 hover:text-brand-600"><span>Remote SAP jobs</span><span className="text-ink/50">{modules.remote}</span></Link></li>
             </ul>
           </div>
           <div className="card bg-brand-50 p-5">
-            <h2 className="text-lg">Not getting interview calls?</h2>
-            <p className="mt-1 text-sm text-ink/70">Make a fresh CV in minutes and adapt it to every job you apply for. Free to start.</p>
-            <Link href="/cv" className="btn-primary mt-4">Create my CV</Link>
+            <h2 className="text-lg">Get introduced to hiring companies</h2>
+            <p className="mt-1 text-sm text-ink/70">Create your EWM/TM profile once. We put you forward for matching roles, only with your consent.</p>
+            <Link href="/signup" className="btn-primary mt-4">Create my profile</Link>
           </div>
         </aside>
       </section>
 
       <section className="container-x mt-12">
-        <h2 className="mb-4 text-xl sm:text-2xl">Explore jobs by department</h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {stats.categories.map((c) => (
-            <Link key={c.name} href={`/jobs?category=${encodeURIComponent(c.name)}`} className="card card-hover p-4">
-              <span className="text-brand-500"><Icon d={CATEGORY_ICON[c.name] || CATEGORY_ICON.Other} /></span>
-              <p className="mt-2 text-sm font-semibold">{c.name}</p>
-              <p className="text-xs text-ink/50">{c.n} jobs</p>
+        <h2 className="mb-4 text-xl sm:text-2xl">Browse by module & contract</h2>
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {[['/sap-ewm-jobs', 'SAP EWM', 'Extended Warehouse Management', modules.ewm, CATEGORY_ICON.Operations],
+            ['/sap-tm-jobs', 'SAP TM', 'Transportation Management', modules.tm, 'M3 7h11v9H3zM14 10h4l3 3v3h-7zM7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z'],
+            ['/jobs?type=Contract', 'Contract & freelance', 'Day-rate and fixed-term projects', modules.contract, CATEGORY_ICON.Finance],
+            ['/jobs?remote=1', 'Remote', 'Work from anywhere', modules.remote, CATEGORY_ICON.Product]].map(([href, t, d, n, icon]) => (
+            <Link key={href} href={href} className="card card-hover p-4">
+              <span className="text-brand-500"><Icon d={icon} /></span>
+              <p className="mt-2 font-semibold">{t}</p>
+              <p className="text-xs text-ink/55">{d}</p>
+              <p className="mt-1 text-sm font-medium text-brand-600">{n} jobs</p>
             </Link>
           ))}
         </div>
@@ -112,9 +117,9 @@ export default async function Home() {
 
       <section className="container-x mt-12 grid gap-4 md:grid-cols-3">
         {[
-          ['/headhunters', 'Talk to a headhunter', 'Search consultants by industry and city and send them your profile directly.'],
-          ['/salaries', 'Check salaries', 'See what companies pay for your role in your city, in lakhs per annum.'],
-          ['/alerts', 'Get job alerts', 'We email you when new jobs match what you’re looking for.'],
+          ['/cv', 'Tailor your CV', 'Build an SAP-focused CV and adapt it to each job, with a matching cover letter.'],
+          ['/alerts', 'Get job alerts', 'Weekly digest of new EWM/TM roles, plus instant alerts for your searches.'],
+          ['/companies', 'Companies hiring', 'SAP partners, consultancies and end users hiring EWM/TM talent right now.'],
         ].map(([href, t, d]) => (
           <Link key={href} href={href} className="card card-hover p-5">
             <h3 className="text-base">{t} →</h3>
@@ -126,12 +131,11 @@ export default async function Home() {
       <section className="container-x mt-12">
         <div className="flex flex-col items-start justify-between gap-5 rounded-2xl bg-brand-900 p-8 text-white sm:flex-row sm:items-center">
           <div>
-            <h2 className="text-2xl text-white">Hiring? Post a job for free</h2>
-            <p className="mt-1 text-white/75">Reach experienced professionals across India and manage applicants in one place.</p>
+            <h2 className="text-2xl text-white">Hiring SAP EWM or TM consultants?</h2>
+            <p className="mt-1 text-white/75">Tell us the role and get a shortlist of screened consultants. You pay only when someone joins.</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link href="/signup?role=employer" className="btn-accent">Post a job</Link>
-            <Link href="/signup?role=headhunter" className="btn border border-white/40 text-white hover:bg-white/10">Join as a headhunter</Link>
+            <Link href="/employers" className="btn-accent">Send a hiring enquiry</Link>
           </div>
         </div>
       </section>

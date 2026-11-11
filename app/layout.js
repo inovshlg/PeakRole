@@ -13,8 +13,9 @@ import SetupNeeded from '@/components/SetupNeeded';
 import { getDbStatus } from '@/lib/db.mjs';
 
 export const metadata = {
-  title: { default: 'PeakRole: senior jobs, salaries shown', template: '%s · PeakRole' },
-  description: 'Senior, director and executive jobs from top employers, with salaries shown up front.',
+  title: { default: 'EWM-TM Jobs: SAP EWM & SAP TM jobs worldwide', template: '%s · EWM-TM Jobs' },
+  description: 'Find SAP EWM and SAP TM consultant jobs worldwide: permanent, contract and remote roles, updated daily.',
+  metadataBase: new URL(process.env.SITE_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'http://localhost:3000')),
 };
 
 export default async function RootLayout({ children }) {

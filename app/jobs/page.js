@@ -3,6 +3,7 @@ import { getDb } from '@/lib/db.mjs';
 import { searchJobs, facetCounts, SENIORITIES, EMPLOYMENT_TYPES } from '@/lib/jobs.mjs';
 import { getCurrentUser } from '@/lib/auth';
 import { MARKET } from '@/lib/market.mjs';
+import { COUNTRIES } from '@/lib/niche.mjs';
 import { formatSalary } from '@/lib/format.mjs';
 import JobCard from '@/components/JobCard';
 import { matchMap } from '@/lib/matching.mjs';
@@ -16,6 +17,8 @@ export default async function JobsPage({ searchParams }) {
   const f = {
     q: sp.q || '', location: sp.location || '', remote: sp.remote === '1', minSalary: sp.minSalary || '',
     seniority: sp.seniority || '', category: sp.category || '', type: sp.type || '', sort: sp.sort || 'recent', page: sp.page || 1,
+    module: ['EWM', 'TM'].includes(sp.module) ? sp.module : '', country: COUNTRIES.some((c) => c.code === sp.country) ? sp.country : '',
+    posted: ['1', '3', '7', '14', '30'].includes(sp.posted) ? sp.posted : '',
   };
   const db = await getDb();
   const user = await getCurrentUser();
@@ -35,7 +38,7 @@ export default async function JobsPage({ searchParams }) {
 
   return (
     <div className="container-x py-8">
-      <SearchBar q={f.q} location={f.location} hidden={{ category: f.category, seniority: f.seniority, sort: f.sort !== 'recent' && f.sort }} />
+      <SearchBar q={f.q} location={f.location} hidden={{ module: f.module, country: f.country, seniority: f.seniority, sort: f.sort !== 'recent' && f.sort }} />
 
       <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[260px_1fr]">
         <aside>
@@ -50,7 +53,7 @@ export default async function JobsPage({ searchParams }) {
               <input type="checkbox" name="remote" value="1" defaultChecked={f.remote} className="h-4 w-4 accent-brand-700" /> Remote only
             </label>
             <div>
-              <label className="label" htmlFor="minSalary">Minimum salary (per year)</label>
+              <label className="label" htmlFor="minSalary">Minimum salary (per year, USD equiv.)</label>
               <select id="minSalary" name="minSalary" defaultValue={f.minSalary} className="input">
                 <option value="">Any</option>
                 {MARKET.salarySteps.map((s) => <option key={s} value={s}>{formatSalary(s, null, MARKET.currency)}</option>)}
@@ -64,17 +67,28 @@ export default async function JobsPage({ searchParams }) {
               </select>
             </div>
             <div>
-              <label className="label" htmlFor="category">Field</label>
-              <select id="category" name="category" defaultValue={f.category} className="input">
-                <option value="">All fields</option>
-                {categories.map((c) => <option key={c.name} value={c.name}>{c.name} ({c.n})</option>)}
+              <label className="label" htmlFor="module">SAP module</label>
+              <select id="module" name="module" defaultValue={f.module} className="input">
+                <option value="">EWM & TM</option><option value="EWM">SAP EWM</option><option value="TM">SAP TM</option>
               </select>
             </div>
             <div>
-              <label className="label" htmlFor="type">Job type</label>
+              <label className="label" htmlFor="country">Country</label>
+              <select id="country" name="country" defaultValue={f.country} className="input">
+                <option value="">All countries</option>
+                {COUNTRIES.map((c) => <option key={c.code} value={c.code}>{c.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="label" htmlFor="type">Contract type</label>
               <select id="type" name="type" defaultValue={f.type} className="input">
-                <option value="">Any</option>
-                {EMPLOYMENT_TYPES.map((t) => <option key={t}>{t}</option>)}
+                <option value="">Any</option><option value="Full-time">Permanent</option><option value="Contract">Contract / freelance</option>
+              </select>
+            </div>
+            <div>
+              <label className="label" htmlFor="posted">Date posted</label>
+              <select id="posted" name="posted" defaultValue={f.posted} className="input">
+                <option value="">Any time</option><option value="1">Last 24 hours</option><option value="3">Last 3 days</option><option value="7">Last 7 days</option><option value="14">Last 14 days</option><option value="30">Last 30 days</option>
               </select>
             </div>
             <input type="hidden" name="sort" value={f.sort} />
