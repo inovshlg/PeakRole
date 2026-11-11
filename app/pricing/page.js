@@ -5,14 +5,14 @@ import Flash from '@/components/Flash';
 
 export const metadata = { title: 'Premium' };
 
-const free = ['Search and save unlimited jobs', 'Salary ranges on every listing', 'Track your applications', '1 daily job alert', 'Recruiter-visible profile'];
-const premium = ['Everything in Free', 'Unlimited job alerts', 'Top placement in recruiter search', 'Professional CV review', 'See how you compare with other applicants', 'Priority support'];
+const free = ['Search and save unlimited jobs', 'AI reads your CV and ranks your best-fit jobs', 'Match refresh once a day', '5 AI fit checks per day', '1 daily job alert', 'Recruiter-visible profile'];
+const premium = ['Everything in Free', 'Unlimited AI fit checks with strengths, gaps & tips', 'Match refreshes every 10 minutes', 'Unlimited job alerts', 'Top placement in recruiter search', 'Priority support'];
 
 export default async function PricingPage({ searchParams }) {
   const sp = await searchParams;
   const user = await getCurrentUser();
   const isPremium = user?.plan === 'premium';
-  const demo = !process.env.STRIPE_SECRET_KEY;
+  const demo = !process.env.STRIPE_SECRET_KEY && (process.env.NODE_ENV !== 'production' || process.env.DEMO_UPGRADES === '1');
   return (
     <div className="container-x py-14">
       <div className="mx-auto max-w-2xl text-center">

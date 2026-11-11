@@ -1,10 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // node:sqlite is a Node built-in; keep it out of the bundle.
-  webpack: (config, { isServer }) => {
-    if (isServer) config.externals.push({ 'node:sqlite': 'commonjs node:sqlite' });
-    return config;
-  },
-  experimental: { serverActions: { bodySizeLimit: '6mb' } },
+  // Database drivers load native/WASM files at runtime; don't bundle them.
+  serverExternalPackages: ['pg', '@electric-sql/pglite', 'mammoth'],
+  experimental: { serverActions: { bodySizeLimit: '4.5mb' } },
 };
 export default nextConfig;

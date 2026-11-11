@@ -11,14 +11,16 @@ export default async function CandidatesPage({ searchParams }) {
   const where = ["role = 'candidate'", 'visible_to_recruiters = 1'];
   const params = [];
   for (const term of q.split(/\s+/).filter(Boolean).slice(0, 5)) {
-    where.push('(headline LIKE ? OR skills LIKE ? OR location LIKE ? OR name LIKE ?)');
-    params.push(...Array(4).fill(`%${term}%`));
+    params.push(`%${term}%`);
+    const t = `$${params.length}`;
+    where.push(`(headline ILIKE ${t} OR skills ILIKE ${t} OR location ILIKE ${t} OR name ILIKE ${t} OR cv_parsed::text ILIKE ${t})`);
   }
-  const people = getDb().prepare(
-    `SELECT id, name, headline, location, years_experience, desired_salary, skills, plan, cv_path
+  const people = await (await getDb()).all(
+    `SELECT id, name, headline, location, years_experience, desired_salary, skills, plan, cv_name, cv_parsed->>'summary' AS summary
      FROM users WHERE ${where.join(' AND ')}
-     ORDER BY plan = 'premium' DESC, created_at DESC LIMIT 50`
-  ).all(...params);
+     ORDER BY (plan = 'premium') DESC, created_at DESC LIMIT 50`,
+    params
+  );
 
   return (
     <div className="container-x py-10">
@@ -38,8 +40,9 @@ export default async function CandidatesPage({ searchParams }) {
                 <p className="font-semibold">{p.name} {p.plan === 'premium' && <span className="chip ml-1 !bg-clay-500 !text-white">Premium</span>}</p>
                 <p className="text-sm text-ink/70">{p.headline || 'No headline yet'}</p>
                 <p className="mt-1 text-sm text-ink/50">{[p.location, p.years_experience && `${p.years_experience} yrs experience`, p.desired_salary && `Seeking ${(p.desired_salary / 1000).toLocaleString()}k`].filter(Boolean).join(' · ')}</p>
+                {p.summary && <p className="mt-2 text-sm text-ink/60">{p.summary}</p>}
                 {p.skills && <div className="mt-3 flex flex-wrap gap-1.5">{p.skills.split(',').slice(0, 6).map((s) => <span key={s} className="chip">{s.trim()}</span>)}</div>}
-                {p.cv_path && <a href={`/api/cv/${p.id}`} className="mt-3 inline-block text-sm font-semibold text-moss-700">Download CV →</a>}
+                {p.cv_name && <a href={`/api/cv/${p.id}`} className="mt-3 inline-block text-sm font-semibold text-moss-700">Download CV →</a>}
               </div>
             </div>
           </div>

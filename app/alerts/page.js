@@ -9,7 +9,7 @@ export const metadata = { title: 'Job alerts' };
 export default async function AlertsPage({ searchParams }) {
   const sp = await searchParams;
   const user = await requireUser('/alerts', 'candidate');
-  const alerts = getDb().prepare('SELECT * FROM alerts WHERE user_id = ? ORDER BY created_at DESC').all(user.id);
+  const alerts = await (await getDb()).all('SELECT * FROM alerts WHERE user_id = $1 ORDER BY created_at DESC', [user.id]);
   const limitReached = user.plan !== 'premium' && alerts.length >= 1;
 
   return (

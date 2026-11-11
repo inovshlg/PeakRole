@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { formatSalary, timeAgo } from '@/lib/format.mjs';
 import CompanyMark from './CompanyMark';
+import MatchBadge from './MatchBadge';
 
-export default function JobCard({ job, saved }) {
+export default function JobCard({ job, saved, match }) {
   const salary = formatSalary(job.salary_min, job.salary_max, job.currency);
   return (
     <Link href={`/jobs/${job.id}`} className="card group flex min-w-0 gap-4 p-5 transition hover:border-moss-500/50 hover:shadow-sm">
@@ -13,7 +14,10 @@ export default function JobCard({ job, saved }) {
             <h3 className="truncate font-sans text-base font-semibold text-ink group-hover:text-moss-700">{job.title}</h3>
             <p className="mt-0.5 truncate text-sm text-ink/60">{job.company} · {job.location || 'Location flexible'}</p>
           </div>
-          {saved && <span className="chip shrink-0 !bg-moss-50 !text-moss-700">★ Saved</span>}
+          <div className="flex shrink-0 flex-col items-end gap-1">
+            {match && <MatchBadge score={match.score} ai={!!match.ai} />}
+            {saved && <span className="chip !bg-moss-50 !text-moss-700">★ Saved</span>}
+          </div>
         </div>
         {job.snippet && <p className="mt-2 line-clamp-2 text-sm text-ink/55">{job.snippet}</p>}
         <div className="mt-3 flex flex-wrap items-center gap-2">

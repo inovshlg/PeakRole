@@ -28,12 +28,13 @@ export default async function EmployersPage({ searchParams }) {
     );
   }
 
-  const db = getDb();
-  const jobs = db.prepare(
-    `SELECT j.*, (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.id) AS applicants,
-            (SELECT COUNT(*) FROM saved_jobs s WHERE s.job_id = j.id) AS saves
-     FROM jobs j WHERE posted_by_user_id = ? ORDER BY created_at DESC`
-  ).all(user.id);
+  const db = await getDb();
+  const jobs = await db.all(
+    `SELECT j.*, (SELECT COUNT(*)::int FROM applications a WHERE a.job_id = j.id) AS applicants,
+            (SELECT COUNT(*)::int FROM saved_jobs s WHERE s.job_id = j.id) AS saves
+     FROM jobs j WHERE posted_by_user_id = $1 ORDER BY created_at DESC`,
+    [user.id]
+  );
 
   return (
     <div className="container-x py-10">
@@ -45,7 +46,7 @@ export default async function EmployersPage({ searchParams }) {
         <Link href="/employers/candidates" className="btn-ghost">Search candidates →</Link>
       </div>
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">
+      <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
         <form action={postJob} className="card space-y-4 p-6 sm:p-8">
           <h2 className="text-2xl">Post a new job</h2>
           <Flash error={sp.error} ok={sp.posted && 'Your job is live. It appears in search and alerts straight away.'} />

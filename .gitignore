@@ -1,6 +1,5 @@
 node_modules
 .next
-data/*.db*
-data/uploads
+data/
 .env*.local
 .env

@@ -4,6 +4,7 @@ import { requireUser } from '@/lib/auth';
 import { formatSalary, timeAgo } from '@/lib/format.mjs';
 import { updateApplicationStatus, toggleSave } from '@/app/actions';
 import JobCard from '@/components/JobCard';
+import { CARD_COLS } from '@/lib/jobs.mjs';
 import Flash from '@/components/Flash';
 
 export const metadata = { title: 'Dashboard' };
@@ -13,29 +14,26 @@ const STATUSES = { applied: 'Applied', interviewing: 'Interviewing', offer: 'Off
 export default async function Dashboard({ searchParams }) {
   const sp = await searchParams;
   const user = await requireUser('/dashboard', 'candidate');
-  const db = getDb();
-  const saved = db.prepare(
-    `SELECT j.* FROM saved_jobs s JOIN jobs j ON j.id = s.job_id WHERE s.user_id = ? ORDER BY s.created_at DESC`
-  ).all(user.id);
-  const apps = db.prepare(
-    `SELECT a.status, a.created_at AS applied_at, j.id, j.title, j.company, j.location, j.salary_min, j.salary_max, j.currency
-     FROM applications a JOIN jobs j ON j.id = a.job_id WHERE a.user_id = ? ORDER BY a.created_at DESC`
-  ).all(user.id);
-  const alertCount = db.prepare('SELECT COUNT(*) AS n FROM alerts WHERE user_id = ?').get(user.id).n;
-
-  // Recommended: match desired salary + headline keywords
-  const keywords = (user.headline || '').split(/[·,|]/)[0].trim().split(/\s+/).filter((w) => w.length > 3).slice(0, 2);
-  const recommended = db.prepare(
-    `SELECT id, title, company, location, remote, seniority, employment_type, salary_min, salary_max, currency, posted_at
-     FROM jobs WHERE status='active' ${keywords.map(() => 'AND title LIKE ?').join(' ')}
-     ${user.desired_salary ? 'AND COALESCE(salary_max, salary_min, 0) >= ?' : ''}
-     AND id NOT IN (SELECT job_id FROM applications WHERE user_id = ?)
-     ORDER BY posted_at DESC LIMIT 4`
-  ).all(...keywords.map((k) => `%${k}%`), ...(user.desired_salary ? [user.desired_salary] : []), user.id);
+  const db = await getDb();
+  const [saved, apps, { n: alertCount }, topMatches] = await Promise.all([
+    db.all(`SELECT ${CARD_COLS} FROM saved_jobs s JOIN jobs j ON j.id = s.job_id WHERE s.user_id = $1 ORDER BY s.created_at DESC`, [user.id]),
+    db.all(
+      `SELECT a.status, a.created_at AS applied_at, j.id, j.title, j.company, j.location, j.salary_min, j.salary_max, j.currency
+       FROM applications a JOIN jobs j ON j.id = a.job_id WHERE a.user_id = $1 ORDER BY a.created_at DESC`,
+      [user.id]
+    ),
+    db.get('SELECT COUNT(*)::int AS n FROM alerts WHERE user_id = $1', [user.id]),
+    db.all(
+      `SELECT ${CARD_COLS}, m.score, m.ai FROM job_matches m JOIN jobs j ON j.id = m.job_id
+       WHERE m.user_id = $1 AND j.status = 'active' AND j.id NOT IN (SELECT job_id FROM applications WHERE user_id = $1)
+       ORDER BY m.score DESC LIMIT 4`,
+      [user.id]
+    ),
+  ]);
 
   const checklist = [
     ['Add a headline', !!user.headline], ['Set your desired salary', !!user.desired_salary],
-    ['Upload your CV', !!user.cv_path], ['Create a job alert', alertCount > 0], ['Become visible to recruiters', !!user.visible_to_recruiters],
+    ['Upload your CV', !!user.cv_name], ['Get AI job matches', !!user.matches_refreshed_at], ['Create a job alert', alertCount > 0], ['Become visible to recruiters', !!user.visible_to_recruiters],
   ];
   const done = checklist.filter(([, d]) => d).length;
 
@@ -56,7 +54,7 @@ export default async function Dashboard({ searchParams }) {
         ))}
       </div>
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_320px]">
+      <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="space-y-10">
           <section>
             <h2 className="mb-4 text-2xl">Applications</h2>
@@ -102,12 +100,19 @@ export default async function Dashboard({ searchParams }) {
             )}
           </section>
 
-          {recommended.length > 0 && (
-            <section>
-              <h2 className="mb-4 text-2xl">Recommended for you</h2>
-              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">{recommended.map((j) => <JobCard key={j.id} job={j} />)}</div>
-            </section>
-          )}
+          <section>
+            <div className="mb-4 flex items-end justify-between gap-4">
+              <h2 className="text-2xl">Your best matches</h2>
+              <Link href="/matches" className="shrink-0 text-sm font-semibold text-moss-700 hover:underline">All matches →</Link>
+            </div>
+            {topMatches.length > 0 ? (
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">{topMatches.map((j) => <JobCard key={j.id} job={j} match={j} />)}</div>
+            ) : (
+              <div className="card p-6 text-sm text-ink/60">
+                Upload your CV and we’ll rank open jobs by how well they fit you. <Link href="/matches" className="font-semibold text-moss-700">Find my matches →</Link>
+              </div>
+            )}
+          </section>
         </div>
 
         <aside className="space-y-4">
@@ -125,7 +130,7 @@ export default async function Dashboard({ searchParams }) {
           {user.plan !== 'premium' && (
             <div className="card bg-moss-900 p-6 text-sand-50">
               <h3 className="text-xl">Go Premium</h3>
-              <p className="mt-2 text-sm text-sand-100/75">Unlimited job alerts, top placement in recruiter search and a CV review.</p>
+              <p className="mt-2 text-sm text-sand-100/75">Unlimited job alerts and AI fit checks, match refreshes every 10 minutes, and top placement in recruiter search.</p>
               <Link href="/pricing" className="btn-accent mt-4 w-full">See plans</Link>
             </div>
           )}

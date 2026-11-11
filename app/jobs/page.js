@@ -3,6 +3,7 @@ import { getDb } from '@/lib/db.mjs';
 import { searchJobs, facetCounts, SENIORITIES, EMPLOYMENT_TYPES } from '@/lib/jobs.mjs';
 import { getCurrentUser } from '@/lib/auth';
 import JobCard from '@/components/JobCard';
+import { matchMap } from '@/lib/matching.mjs';
 import SearchBar from '@/components/SearchBar';
 
 export const metadata = { title: 'Search jobs' };
@@ -15,13 +16,15 @@ export default async function JobsPage({ searchParams }) {
     q: sp.q || '', location: sp.location || '', remote: sp.remote === '1', minSalary: sp.minSalary || '',
     seniority: sp.seniority || '', category: sp.category || '', type: sp.type || '', sort: sp.sort || 'recent', page: sp.page || 1,
   };
-  const db = getDb();
-  const result = searchJobs(db, f);
-  const { categories } = facetCounts(db);
+  const db = await getDb();
   const user = await getCurrentUser();
-  const savedIds = new Set(
-    user ? db.prepare('SELECT job_id FROM saved_jobs WHERE user_id = ?').all(user.id).map((r) => r.job_id) : []
-  );
+  const [result, { categories }, savedRows, matches] = await Promise.all([
+    searchJobs(db, f),
+    facetCounts(db),
+    user ? db.all('SELECT job_id FROM saved_jobs WHERE user_id = $1', [user.id]) : [],
+    matchMap(db, user?.id),
+  ]);
+  const savedIds = new Set(savedRows.map((r) => r.job_id));
 
   const qs = (over) => {
     const p = new URLSearchParams();
@@ -33,7 +36,7 @@ export default async function JobsPage({ searchParams }) {
     <div className="container-x py-8">
       <SearchBar q={f.q} location={f.location} hidden={{ category: f.category, seniority: f.seniority, sort: f.sort !== 'recent' && f.sort }} />
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[260px_1fr]">
+      <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[260px_1fr]">
         <aside>
           <form action="/jobs" className="card space-y-6 p-5 lg:sticky lg:top-24">
             <input type="hidden" name="q" value={f.q} />
@@ -78,7 +81,7 @@ export default async function JobsPage({ searchParams }) {
           </form>
         </aside>
 
-        <section>
+        <section className="min-w-0">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-ink/60">
               <strong className="text-ink">{result.total.toLocaleString()}</strong> jobs{f.q && <> for “{f.q}”</>}{f.location && <> in {f.location}</>}
@@ -97,7 +100,7 @@ export default async function JobsPage({ searchParams }) {
           )}
 
           <div className="space-y-3">
-            {result.jobs.map((j) => <JobCard key={j.id} job={j} saved={savedIds.has(j.id)} />)}
+            {result.jobs.map((j) => <JobCard key={j.id} job={j} saved={savedIds.has(j.id)} match={matches.get(j.id)} />)}
             {result.jobs.length === 0 && (
               <div className="card p-10 text-center">
                 <p className="font-display text-xl">No jobs match these filters</p>

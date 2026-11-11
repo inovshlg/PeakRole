@@ -6,10 +6,9 @@ import SearchBar from '@/components/SearchBar';
 
 export const dynamic = 'force-dynamic';
 
-export default function Home() {
-  const db = getDb();
-  const stats = facetCounts(db);
-  const { jobs } = searchJobs(db, { sort: 'salary', pageSize: 6 });
+export default async function Home() {
+  const db = await getDb();
+  const [stats, { jobs }] = await Promise.all([facetCounts(db), searchJobs(db, { sort: 'salary', pageSize: 6 })]);
 
   return (
     <>
