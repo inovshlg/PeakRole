@@ -25,7 +25,7 @@ export default function JobCard({ job, saved, match }) {
           {job.remote ? <span className="chip">Remote</span> : null}
           {job.seniority && <span className="chip">{job.seniority}</span>}
           {job.employment_type && job.employment_type !== 'Full-time' && <span className="chip">{job.employment_type}</span>}
-          <span className="ml-auto text-xs text-ink/45">{timeAgo(job.posted_at)}</span>
+          <span className="ml-auto text-xs text-ink/45">{job.source === 'adzuna' && 'via Adzuna · '}{timeAgo(job.posted_at)}</span>
         </div>
       </div>
     </Link>

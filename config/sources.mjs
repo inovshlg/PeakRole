@@ -14,9 +14,13 @@ export default {
   greenhouse: ['stripe', 'databricks', 'cloudflare', 'rubrik', 'okta', 'gitlab', 'postman', 'airbnb'],
   lever: ['cred', 'meesho', 'zeta'],
   ashby: ['zepto', 'notion', 'ramp'],
+  // Each page is one Adzuna API call returning up to 50 jobs. A run is also capped by
+  // ADZUNA_MAX_CALLS (default 6), so a trial key with 25 calls lasts about 4 runs.
+  // Once Adzuna approves your production key, raise ADZUNA_MAX_CALLS and add queries.
   adzuna: {
     country: 'in',
-    queries: ['director', 'head of', 'vice president', 'senior manager', 'general manager', 'lead'],
-    pages: 2, // 50 jobs per page → up to 600 jobs per run; Adzuna's free tier allows ~250 requests/day
+    queries: ['director', 'head of', 'senior manager'],
+    pages: 2,
+    maxDaysOld: 30,
   },
 };

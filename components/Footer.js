@@ -25,7 +25,10 @@ export default function Footer() {
           </ul>
         </div>
       </div>
-      <div className="container-x border-t border-ink/10 py-5 text-xs text-ink/50">© {new Date().getFullYear()} PeakRole</div>
+      <div className="container-x flex flex-wrap justify-between gap-2 border-t border-ink/10 py-5 text-xs text-ink/50">
+        <span>© {new Date().getFullYear()} PeakRole</span>
+        <a href="https://www.adzuna.in" target="_blank" rel="noopener" className="hover:text-ink">Jobs by Adzuna</a>
+      </div>
     </footer>
   );
 }

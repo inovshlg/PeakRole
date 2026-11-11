@@ -54,7 +54,7 @@ export default async function JobPage({ params, searchParams }) {
 
   return (
     <div className="container-x py-8">
-      {!expired && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />}
+      {!expired && job.source !== 'adzuna' && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />}
       <Link href="/jobs" className="text-sm text-ink/60 hover:text-ink">← Back to search</Link>
 
       <div className="mt-4 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
@@ -71,6 +71,12 @@ export default async function JobPage({ params, searchParams }) {
           {match?.detailed ? <FitReport match={match} /> : null}
           {sp.applied && <p className="alert-ok mt-6">Application sent with your CV. Track it on your <Link href="/dashboard" className="underline">dashboard</Link>.</p>}
           <div className="prose-job mt-6" dangerouslySetInnerHTML={{ __html: job.description_html || '<p>No description provided.</p>' }} />
+          {job.source === 'adzuna' && (
+            <p className="mt-6 rounded-xl bg-sand-100 p-4 text-sm text-ink/70">
+              This is a summary. The full description and application are on the original listing.{' '}
+              <a href="https://www.adzuna.in" target="_blank" rel="noopener" className="font-semibold text-moss-700">Jobs by Adzuna</a>
+            </p>
+          )}
         </article>
 
         <aside className="space-y-4">
@@ -88,7 +94,7 @@ export default async function JobPage({ params, searchParams }) {
               <form action={applyToJob}>
                 <input type="hidden" name="jobId" value={job.id} />
                 <button className="btn-accent w-full">
-                  {applied ? 'Applied ✓ · Open again' : job.apply_url ? 'Apply on company site ↗' : 'Apply with my CV'}
+                  {applied ? 'Applied ✓ · Open again' : job.source === 'adzuna' ? 'View full job & apply ↗' : job.apply_url ? 'Apply on company site ↗' : 'Apply with my CV'}
                 </button>
               </form>
             )}
