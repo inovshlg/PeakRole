@@ -5,31 +5,35 @@
 @layer base {
   html { -webkit-text-size-adjust: 100%; }
   body { @apply bg-canvas-50 font-sans text-[15px] text-ink antialiased; }
+  @media (max-width: 767px) { body { padding-bottom: 4rem; } }
   h1, h2, h3 { @apply font-display font-semibold text-ink; }
   :focus-visible { outline: 2px solid #1f4fd1; outline-offset: 2px; }
+  h1, h2, h3, h4 { letter-spacing: -0.01em; }
 }
 
 @layer components {
   .container-x { @apply mx-auto w-full max-w-7xl px-4 sm:px-6; }
 
   .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50; }
-  .btn-primary { @apply btn bg-brand-500 text-white hover:bg-brand-600 active:bg-brand-700; }
-  .btn-accent { @apply btn bg-accent-500 text-white hover:bg-accent-600; }
-  .btn-ghost { @apply btn border border-brand-500/40 bg-white text-brand-600 hover:bg-brand-50; }
+  .btn-primary { @apply btn bg-brand-500 text-white hover:bg-brand-600 active:bg-brand-700 shadow-sm; }
+  .btn-accent { @apply btn bg-accent-500 text-accent-ink hover:brightness-95; }
+  .btn-ghost { @apply btn bg-canvas-100 text-brand-600 hover:bg-canvas-200; }
   .btn-quiet { @apply btn text-brand-600 hover:bg-brand-50; }
   .btn-danger { @apply btn border border-negative/40 bg-white text-negative hover:bg-negative/5; }
 
-  .card { @apply rounded-xl border border-canvas-200 bg-white shadow-card; }
+  .card { @apply rounded-xl bg-white shadow-card; }
   .card-hover { @apply transition-shadow hover:shadow-raised; }
-  .input { @apply w-full rounded-lg border border-canvas-200 bg-white px-3.5 py-2.5 text-sm text-ink placeholder:text-ink/40 hover:border-brand-200 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20; }
+  .input { @apply w-full rounded-lg border border-transparent bg-brand-50 px-3.5 py-2.5 text-sm text-ink placeholder:text-[#747686] focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20; }
   .label { @apply mb-1.5 block text-[13px] font-medium text-ink/70; }
-  .chip { @apply inline-flex items-center gap-1 rounded-md bg-canvas-100 px-2 py-0.5 text-xs font-medium text-ink/70; }
-  .chip-info { @apply chip bg-brand-50 text-brand-700; }
+  .chip { @apply inline-flex items-center gap-1 rounded bg-canvas-100 px-2.5 py-1 text-xs font-medium text-ink/80; }
+  .chip-info { @apply chip bg-brand-100 text-brand-900; }
+  .tag { @apply inline-flex items-center rounded px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide; }
+  .match-pill { @apply inline-flex items-center gap-1 rounded-full bg-canvas-100 px-3 py-1 text-sm font-semibold text-positive; }
   .alert-error { @apply rounded-lg border-l-4 border-negative bg-negative/5 px-4 py-3 text-sm text-ink; }
   .alert-ok { @apply rounded-lg border-l-4 border-positive bg-positive/5 px-4 py-3 text-sm text-ink; }
   .page-title { @apply text-2xl font-semibold sm:text-3xl; }
   .section-title { @apply text-lg font-semibold; }
-  .eyebrow { @apply text-sm font-medium text-ink/55; }
+  .eyebrow { @apply text-[11px] font-semibold uppercase tracking-wider text-muted; }
 
   .prose-job { @apply text-[15px] leading-7 text-ink/85; }
   .prose-job p { @apply my-3; }

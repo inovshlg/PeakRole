@@ -22,11 +22,11 @@ export default function CompanyMark({ name = '', domain, size = 'md' }) {
   useEffect(() => {
     if (img.current?.complete && img.current.naturalWidth === 0) setFailed(true);
   }, []);
-  const dim = size === 'lg' ? 'h-14 w-14 text-lg' : size === 'sm' ? 'h-9 w-9 text-xs' : 'h-11 w-11 text-sm';
+  const dim = size === 'lg' ? 'h-14 w-14 text-lg' : size === 'sm' ? 'h-9 w-9 text-xs' : 'h-12 w-12 text-sm';
   const src = !failed && logoUrl(domain);
   if (src) {
     return (
-      <div className={`flex shrink-0 items-center justify-center overflow-hidden rounded-lg border border-canvas-200 bg-white p-1.5 ${dim}`}>
+      <div className={`flex shrink-0 items-center justify-center overflow-hidden rounded-lg bg-brand-50 p-1.5 ${dim}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img ref={img} src={src} alt={`${name} logo`} className="h-full w-full object-contain" loading="lazy" onError={() => setFailed(true)} />
       </div>

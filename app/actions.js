@@ -51,7 +51,7 @@ export async function signup(formData) {
   );
   if (role === 'employer') await grantCredits(db, id, STARTER_CREDITS, 'Welcome credits');
   await createSession(id);
-  redirect(safeNext(str(formData, 'next')) || (role === 'employer' ? '/employers/profile?welcome=1' : '/profile?welcome=1'));
+  redirect(safeNext(str(formData, 'next')) || (role === 'employer' ? '/employers/profile?welcome=1' : '/onboarding'));
 }
 
 export async function login(formData) {
@@ -135,44 +135,65 @@ export async function updateProfile(formData) {
   );
 
   // 2. Store a new CV, then let the AI read it.
-  const file = formData.get('cv');
-  if (file && typeof file === 'object' && file.size > 0) {
-    const ext = path.extname(file.name).toLowerCase();
-    const mime = CV_TYPES[ext];
-    if (!mime) fail('/profile', 'CV must be a PDF or Word document.');
-    if (file.size > CV_MAX_BYTES) fail('/profile', 'CV must be under 4 MB.');
-    const buffer = Buffer.from(await file.arrayBuffer());
-    if (ext === '.pdf' && buffer.subarray(0, 5).toString() !== '%PDF-') fail('/profile', 'That file is not a valid PDF.');
-    const filename = file.name.slice(0, 120);
-    await db.run(
-      `INSERT INTO cv_files (user_id, filename, mime, data) VALUES ($1, $2, $3, $4)
-       ON CONFLICT (user_id) DO UPDATE SET filename = excluded.filename, mime = excluded.mime, data = excluded.data, uploaded_at = now()`,
-      [user.id, filename, mime, buffer]
-    );
-    await db.run('UPDATE users SET cv_name = $1, cv_parsed = NULL, cv_parsed_at = NULL WHERE id = $2', [filename, user.id]);
-
-    if (aiEnabled()) {
-      try {
-        const parsed = await parseCv({ buffer, mime });
-        // 3. Fill in only the fields that are still empty; never overwrite what the user typed.
-        await db.run(
-          `UPDATE users SET cv_parsed = $1, cv_parsed_at = now(),
-             headline = COALESCE(NULLIF(headline, ''), NULLIF($2, '')),
-             location = COALESCE(NULLIF(location, ''), NULLIF($3, '')),
-             years_experience = COALESCE(years_experience, NULLIF($4::int, 0)),
-             skills = COALESCE(NULLIF(skills, ''), NULLIF($5, ''))
-           WHERE id = $6`,
-          [JSON.stringify(parsed), parsed.headline, parsed.location, parsed.years_experience, parsed.skills.join(', '), user.id]
-        );
-        notice = 'parsed=1';
-      } catch (err) {
-        if (!(err instanceof AiError)) console.error('CV parsing failed', err);
-        notice = `saved=1&error=${encodeURIComponent(`CV saved, but AI reading failed: ${err instanceof AiError ? err.message : 'unexpected error'}`)}`;
-      }
-    }
-  }
+  notice = (await storeCv(db, user, formData.get('cv'), '/profile')) || notice;
   revalidatePath('/', 'layout');
   redirect(`/profile?${notice}`);
+}
+
+/** Save an uploaded CV and let the AI fill empty profile fields from it. Returns a query-string notice, or null if no file. */
+async function storeCv(db, user, file, back) {
+  if (!file || typeof file !== 'object' || !file.size) return null;
+  const ext = path.extname(file.name).toLowerCase();
+  const mime = CV_TYPES[ext];
+  if (!mime) fail(back, 'CV must be a PDF or Word document.');
+  if (file.size > CV_MAX_BYTES) fail(back, 'CV must be under 4 MB.');
+  const buffer = Buffer.from(await file.arrayBuffer());
+  if (ext === '.pdf' && buffer.subarray(0, 5).toString() !== '%PDF-') fail(back, 'That file is not a valid PDF.');
+  const filename = file.name.slice(0, 120);
+  await db.run(
+    `INSERT INTO cv_files (user_id, filename, mime, data) VALUES ($1, $2, $3, $4)
+     ON CONFLICT (user_id) DO UPDATE SET filename = excluded.filename, mime = excluded.mime, data = excluded.data, uploaded_at = now()`,
+    [user.id, filename, mime, buffer]
+  );
+  await db.run('UPDATE users SET cv_name = $1, cv_parsed = NULL, cv_parsed_at = NULL WHERE id = $2', [filename, user.id]);
+  if (!aiEnabled()) return 'saved=1';
+  try {
+    const parsed = await parseCv({ buffer, mime });
+    // Fill in only the fields that are still empty; never overwrite what the user typed.
+    await db.run(
+      `UPDATE users SET cv_parsed = $1, cv_parsed_at = now(),
+         headline = COALESCE(NULLIF(headline, ''), NULLIF($2, '')),
+         location = COALESCE(NULLIF(location, ''), NULLIF($3, '')),
+         years_experience = COALESCE(years_experience, NULLIF($4::int, 0)),
+         skills = COALESCE(NULLIF(skills, ''), NULLIF($5, ''))
+       WHERE id = $6`,
+      [JSON.stringify(parsed), parsed.headline, parsed.location, parsed.years_experience, parsed.skills.join(', '), user.id]
+    );
+    return 'parsed=1';
+  } catch (err) {
+    if (!(err instanceof AiError)) console.error('CV parsing failed', err);
+    return `saved=1&error=${encodeURIComponent(`CV saved, but AI reading failed: ${err instanceof AiError ? err.message : 'unexpected error'}`)}`;
+  }
+}
+
+/** Onboarding wizard after sign-up: the SAP basics recruiters filter on, plus an optional CV. */
+export async function completeOnboarding(formData) {
+  const user = await requireUser('/onboarding', 'candidate');
+  const db = await getDb();
+  const modules = formData.getAll('sap_modules').map(String).filter((m) => /^[\w /]{1,20}$/.test(m));
+  const years = Math.max(0, Math.min(40, Math.round(Number(formData.get('years_experience')) || 0)));
+  await db.run(
+    `UPDATE users SET sap_modules = COALESCE($1, sap_modules), years_experience = $2, s4hana = $3,
+       notice_period = COALESCE($4, notice_period), location = COALESCE(NULLIF($5, ''), location),
+       open_remote = $6, open_relocation = $7, open_contract = $8, onboarded_at = now() WHERE id = $9`,
+    [
+      modules.join(', ') || null, years, formData.get('s4hana') ? 1 : 0, str(formData, 'notice_period').slice(0, 30) || null,
+      str(formData, 'location'), formData.get('open_remote') ? 1 : 0, formData.get('open_relocation') ? 1 : 0, formData.get('open_contract') ? 1 : 0, user.id,
+    ]
+  );
+  const notice = await storeCv(db, user, formData.get('cv'), '/onboarding');
+  revalidatePath('/', 'layout');
+  redirect(`/dashboard?welcome=1${notice ? `&${notice}` : ''}`);
 }
 
 /** Recompute AI job matches for the current user. */
@@ -218,18 +239,35 @@ export async function checkMyFit(formData) {
   redirect(`/jobs/${jobId}#fit`);
 }
 
+const ALERT_FREE_LIMIT = 3;
+
+/** Create a job alert from the alerts page or straight from a search (then returns to that search). */
 export async function createAlert(formData) {
-  const user = await requireUser('/alerts');
+  const back = String(formData.get('back') || '');
+  const backPath = back.startsWith('/jobs') ? back : '/alerts';
+  const user = await requireUser(backPath);
   const db = await getDb();
   const { n } = await db.get('SELECT COUNT(*)::int AS n FROM alerts WHERE user_id = $1', [user.id]);
-  if (user.plan !== 'premium' && n >= 1) fail('/alerts', 'Free accounts can have 1 job alert. Upgrade to Premium for unlimited alerts.');
+  if (user.plan !== 'premium' && n >= ALERT_FREE_LIMIT) fail('/alerts', `Free accounts can have ${ALERT_FREE_LIMIT} job alerts. Delete one or upgrade to Premium for unlimited alerts.`);
   const query = str(formData, 'query');
   const location = str(formData, 'location');
-  if (!query && !location) fail('/alerts', 'Enter a job title or a location.');
-  await db.run('INSERT INTO alerts (user_id, query, location, min_salary, remote) VALUES ($1, $2, $3, $4, $5)', [
-    user.id, query, location, num(formData, 'min_salary'), formData.get('remote') ? 1 : 0,
+  const module = ['EWM', 'TM'].includes(formData.get('module')) ? formData.get('module') : null;
+  const country = /^[A-Z]{2}$/.test(String(formData.get('country') || '').toUpperCase()) ? String(formData.get('country')).toUpperCase() : null;
+  const frequency = formData.get('frequency') === 'weekly' ? 'weekly' : 'daily';
+  if (!query && !location && !module && !country) fail('/alerts', 'Choose a module, keyword, country or location.');
+  await db.run('INSERT INTO alerts (user_id, query, location, min_salary, remote, module, country, frequency) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', [
+    user.id, query, location, num(formData, 'min_salary'), formData.get('remote') ? 1 : 0, module, country, frequency,
   ]);
+  if (backPath !== '/alerts') redirect(`${backPath}${backPath.includes('?') ? '&' : '?'}alert=1`);
   redirect('/alerts?created=1');
+}
+
+export async function setAlertFrequency(formData) {
+  const user = await requireUser('/alerts');
+  const frequency = formData.get('frequency') === 'weekly' ? 'weekly' : 'daily';
+  await (await getDb()).run('UPDATE alerts SET frequency = $1 WHERE id = $2 AND user_id = $3', [frequency, Number(formData.get('id')), user.id]);
+  revalidatePath('/alerts');
+  revalidatePath('/dashboard');
 }
 
 export async function deleteAlert(formData) {

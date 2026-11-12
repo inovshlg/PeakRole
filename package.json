@@ -13,8 +13,8 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^1.8.0",
     "@electric-sql/pglite": "^0.5.16",
+    "@fontsource/hanken-grotesk": "^5.3.0",
     "@fontsource/noto-sans": "^5.3.0",
-    "@fontsource/poppins": "^5.3.0",
     "@react-pdf/renderer": "^4.9.0",
     "mammoth": "^1.13.0",
     "next": "^15.5.29",

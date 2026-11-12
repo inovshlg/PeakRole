@@ -7,7 +7,7 @@ import SubmitButton from '@/components/SubmitButton';
 import { updatePrivacy, deleteAccount } from '@/app/network/actions';
 import { CONSENT_TEXT } from '@/lib/consent.mjs';
 
-const SAP_MODULES = ['EWM', 'TM', 'WM', 'MM', 'SD', 'LE', 'PP', 'QM', 'IBP', 'Yard Logistics', 'GTS', 'ABAP'];
+import { SAP_MODULE_OPTIONS as SAP_MODULES } from '@/lib/niche.mjs';
 const NOTICE = ['Immediate', '15 days', '30 days', '60 days', '90 days', 'Serving notice'];
 
 // AI calls run in this page's server actions; allow them time to finish.
@@ -79,13 +79,13 @@ export default async function ProfilePage({ searchParams }) {
           <div><label className="label" htmlFor="name">Full name</label><input id="name" name="name" defaultValue={u.name} className="input" /></div>
           <div><label className="label" htmlFor="location">Location</label><input id="location" name="location" defaultValue={u.location ?? ''} placeholder="e.g. Bengaluru, India" className="input" /></div>
         </div>
-        <div><label className="label" htmlFor="headline">Headline</label><input id="headline" name="headline" defaultValue={u.headline ?? ''} placeholder="e.g. Head of Finance · SaaS · 12 years" className="input" /></div>
+        <div><label className="label" htmlFor="headline">Headline</label><input id="headline" name="headline" defaultValue={u.headline ?? ''} placeholder="e.g. Senior SAP EWM Consultant · S/4HANA · 8 years" className="input" /></div>
         <div className="grid gap-5 sm:grid-cols-2">
-          <div><label className="label" htmlFor="desired_salary">Desired yearly salary (₹ CTC)</label><input id="desired_salary" name="desired_salary" inputMode="numeric" defaultValue={u.desired_salary ?? ''} placeholder="e.g. 3500000 for ₹35 L" className="input" /></div>
+          <div><label className="label" htmlFor="desired_salary">Desired yearly salary (USD equivalent)</label><input id="desired_salary" name="desired_salary" inputMode="numeric" defaultValue={u.desired_salary ?? ''} placeholder="e.g. 60000" className="input" /></div>
           <div><label className="label" htmlFor="years_experience">Years of experience</label><input id="years_experience" name="years_experience" inputMode="numeric" defaultValue={u.years_experience ?? ''} className="input" /></div>
         </div>
         <div><label className="label" htmlFor="skills">Key skills</label><textarea id="skills" name="skills" rows={3} defaultValue={u.skills ?? ''} placeholder="e.g. Inbound/outbound, wave management, RF, MFS, freight orders, charge management" className="input" /></div>
-        <fieldset className="space-y-4 rounded-lg border border-canvas-200 p-4">
+        <fieldset className="space-y-4 rounded-lg bg-brand-50 p-4">
           <legend className="px-1 text-sm font-semibold">SAP experience</legend>
           <div>
             <span className="label">SAP modules</span>
@@ -129,7 +129,7 @@ export default async function ProfilePage({ searchParams }) {
         ].map(([v, title, text]) => {
           const current = !u.visible_to_recruiters ? 'hidden' : u.visibility === 'headhunters' ? 'headhunters' : 'all';
           return (
-            <label key={v} className="flex cursor-pointer items-start gap-3 rounded-lg border border-canvas-200 p-4 text-sm has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50">
+            <label key={v} className="flex cursor-pointer items-start gap-3 rounded-lg bg-brand-50 p-4 text-sm has-[:checked]:ring-2 has-[:checked]:ring-brand-500">
               <input type="radio" name="visibility" value={v} defaultChecked={current === v} className="mt-0.5 h-4 w-4 accent-brand-500" />
               <span><b>{title}</b><br /><span className="text-ink/60">{text}</span></span>
             </label>
@@ -140,7 +140,7 @@ export default async function ProfilePage({ searchParams }) {
           <input id="blocked_companies" name="blocked_companies" defaultValue={u.blocked_companies ?? ''} className="input" placeholder="e.g. your current employer" />
           <p className="mt-1 text-xs text-ink/50">Recruiters from these companies won’t see you in search, even anonymously.</p>
         </div>
-        <label className="flex items-start gap-3 rounded-lg border border-canvas-200 p-4 text-sm">
+        <label className="flex items-start gap-3 rounded-lg bg-brand-50 p-4 text-sm">
           <input type="checkbox" name="consent" value="yes" defaultChecked={!!u.consent_at} className="mt-0.5 h-4 w-4 accent-brand-500" />
           <span><b>{CONSENT_TEXT}</b><br /><span className="text-ink/60">{u.consent_at ? `Consent given on ${new Date(u.consent_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}. Untick to withdraw it.` : 'Without consent we cannot put you forward for roles.'}</span></span>
         </label>
